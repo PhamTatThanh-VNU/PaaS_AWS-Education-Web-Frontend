@@ -115,6 +115,7 @@ const Register = () => {
 
         try {
             await confirmSignUp(formData.email, confirmationCode);
+            // The user data is already saved to DynamoDB in the confirmSignUp function in the AuthContext
             navigate('/login', {
                 state: {
                     message: 'Registration successful! Please sign in with your new account.'

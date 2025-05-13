@@ -15,6 +15,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 // Pages
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
+import ProfilePage from './pages/ProfilePage'
 
 // Initialize AWS Amplify with v6 configuration
 Amplify.configure(awsConfig);
@@ -52,6 +53,11 @@ function App() {
           <Route path="/change-password" element={
             <ProtectedRoute>
               <ChangePassword />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           } />
 

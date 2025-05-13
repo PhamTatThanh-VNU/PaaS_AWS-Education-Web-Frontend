@@ -55,6 +55,7 @@ const Header = () => {
                                     </button>
                                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right">
                                         <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">Dashboard</Link>
+                                        <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">Profile</Link>
                                         <Link to="/change-password" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">Change Password</Link>
                                         <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">
                                             Sign Out
@@ -107,6 +108,7 @@ const Header = () => {
                         {isAuthenticated ? (
                             <div className="flex flex-col space-y-3">
                                 <Link to="/dashboard" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">My Dashboard</Link>
+                                <Link to="/profile" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">Profile</Link>
                                 <Link to="/change-password" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">Change Password</Link>
                                 <button onClick={handleSignOut} className="text-left text-gray-600 hover:text-blue-600 transition-colors font-medium">
                                     Sign Out

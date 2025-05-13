@@ -11,7 +11,7 @@ const ForgotPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [formErrors, setFormErrors] = useState({});
-    const [step, setStep] = useState(1); // 1: email, 2: code & new password
+    const [step, setStep] = useState(1); 
     const { forgotPassword, forgotPasswordSubmit, loading, error } = useAuth();
     const navigate = useNavigate();
 

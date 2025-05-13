@@ -4,6 +4,7 @@ import {
     signOut as amplifySignOut, resetPassword, confirmResetPassword,
     updatePassword, getCurrentUser, fetchUserAttributes
 } from 'aws-amplify/auth';
+import { saveUserToDynamoDB, getUserFromDynamoDB } from '../utils/dynamodbService';
 
 // Create Authentication Context
 const AuthContext = createContext();
@@ -42,6 +43,21 @@ export const AuthProvider = ({ children }) => {
                 const userData = await getCurrentUser();
                 const attributes = await fetchUserAttributes();
                 setUser({ ...userData, attributes });
+
+                // Try to get additional user data from DynamoDB
+                try {
+                    const dynamoDbUserData = await getUserFromDynamoDB(userData.userId);
+                    if (dynamoDbUserData) {
+                        // Merge the DynamoDB data with the user data
+                        setUser(prevUser => ({
+                            ...prevUser,
+                            dynamoDbData: dynamoDbUserData
+                        }));
+                    }
+                } catch (dbErr) {
+                    console.error('Failed to fetch user data from DynamoDB:', dbErr);
+                    // Not critical, so don't throw the error
+                }
             }
 
             return { isSignedIn, nextStep };
@@ -70,6 +86,9 @@ export const AuthProvider = ({ children }) => {
                 userAttributes['gender'] = attributes.gender;
             }
 
+            // Store password temporarily in session storage for automatic login after confirmation
+            sessionStorage.setItem(`temp_password_${email}`, password);
+
             const result = await amplifySignUp({
                 username: email,
                 password,
@@ -92,10 +111,33 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
         setError(null);
         try {
-            return await amplifyConfirmSignUp({
+            const result = await amplifyConfirmSignUp({
                 username: email,
                 confirmationCode: code
             });
+
+            // After successful confirmation, sign in the user to get their attributes
+            try {
+                const { isSignedIn } = await amplifySignIn({ username: email, password: sessionStorage.getItem(`temp_password_${email}`) });
+
+                if (isSignedIn) {
+                    const userData = await getCurrentUser();
+                    const attributes = await fetchUserAttributes();
+
+                    // Save user data to DynamoDB
+                    await saveUserToDynamoDB(userData.userId, attributes);
+
+                    setUser({ ...userData, attributes });
+
+                    // Clean up the temporary password
+                    sessionStorage.removeItem(`temp_password_${email}`);
+                }
+            } catch (signInErr) {
+                console.error("Auto sign-in after confirmation failed:", signInErr);
+                // This isn't critical, so we'll just log it and continue
+            }
+
+            return result;
         } catch (err) {
             setError(err.message || 'Failed to confirm sign up');
             throw err;
