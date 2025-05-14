@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AuthCard from './AuthCard';
@@ -97,11 +97,14 @@ const Register = () => {
                 gender: formData.gender,
             });
             setStep(2);
+            // console.log(step)
         } catch (err) {
             // Error is handled in context and will be displayed from there
         }
     };
-
+    useEffect(() => {
+        console.log(step)
+    }, [step]);
     const handleConfirmSubmit = async (e) => {
         e.preventDefault();
 

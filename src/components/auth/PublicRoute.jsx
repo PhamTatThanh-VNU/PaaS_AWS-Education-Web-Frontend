@@ -1,9 +1,12 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const ProtectedRoute = ({ children }) => {
+/**
+ * PublicRoute component ensures that authenticated users cannot access
+ * public routes like login or register pages
+ */
+const PublicRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth();
-    const location = useLocation();
 
     if (loading) {
         return (
@@ -13,12 +16,12 @@ const ProtectedRoute = ({ children }) => {
         );
     }
 
-    if (!isAuthenticated) {
-        // Redirect to login page with return URL
-        return <Navigate to="/login" state={{ from: location }} replace />;
+    // If user is authenticated, redirect to dashboard
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
     }
 
     return children;
 };
 
-export default ProtectedRoute;
+export default PublicRoute;

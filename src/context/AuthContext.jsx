@@ -46,17 +46,25 @@ export const AuthProvider = ({ children }) => {
 
                 // Try to get additional user data from DynamoDB
                 try {
-                    const dynamoDbUserData = await getUserFromDynamoDB(userData.userId);
+                    const dynamoDbUserData = await getUserFromDynamoDB(attributes.email);
                     if (dynamoDbUserData) {
                         // Merge the DynamoDB data with the user data
                         setUser(prevUser => ({
                             ...prevUser,
                             dynamoDbData: dynamoDbUserData
                         }));
+                    } else {
+                        // If user doesn't exist in DynamoDB yet, save them
+                        await saveUserToDynamoDB(userData.userId, attributes);
                     }
                 } catch (dbErr) {
                     console.error('Failed to fetch user data from DynamoDB:', dbErr);
-                    // Not critical, so don't throw the error
+                    // Try to save user data if there was an error fetching
+                    try {
+                        await saveUserToDynamoDB(userData.userId, attributes);
+                    } catch (saveErr) {
+                        console.error('Failed to save user data to DynamoDB:', saveErr);
+                    }
                 }
             }
 
@@ -96,7 +104,6 @@ export const AuthProvider = ({ children }) => {
                     userAttributes
                 }
             });
-
             return result;
         } catch (err) {
             setError(err.message || 'Failed to sign up');
@@ -116,26 +123,9 @@ export const AuthProvider = ({ children }) => {
                 confirmationCode: code
             });
 
-            // After successful confirmation, sign in the user to get their attributes
-            try {
-                const { isSignedIn } = await amplifySignIn({ username: email, password: sessionStorage.getItem(`temp_password_${email}`) });
-
-                if (isSignedIn) {
-                    const userData = await getCurrentUser();
-                    const attributes = await fetchUserAttributes();
-
-                    // Save user data to DynamoDB
-                    await saveUserToDynamoDB(userData.userId, attributes);
-
-                    setUser({ ...userData, attributes });
-
-                    // Clean up the temporary password
-                    sessionStorage.removeItem(`temp_password_${email}`);
-                }
-            } catch (signInErr) {
-                console.error("Auto sign-in after confirmation failed:", signInErr);
-                // This isn't critical, so we'll just log it and continue
-            }
+            // We only confirm the account, not automatically sign in
+            // Clean up the temporary password
+            sessionStorage.removeItem(`temp_password_${email}`);
 
             return result;
         } catch (err) {

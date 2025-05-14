@@ -11,11 +11,15 @@ import Register from './components/auth/Register'
 import ForgotPassword from './components/auth/ForgotPassword'
 import ChangePassword from './components/auth/ChangePassword'
 import ProtectedRoute from './components/auth/ProtectedRoute'
-
+import PublicRoute from './components/auth/PublicRoute'
 // Pages
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import ProfilePage from './pages/ProfilePage'
+import SeriesManagerPage from './pages/SeriesManagerPage'
+import SeriesDetailPage from './pages/SeriesDetailPage'
+import ExplorePage from './pages/ExplorePage'
+import LessonPage from './pages/LessonPage'
 
 // Initialize AWS Amplify with v6 configuration
 Amplify.configure(awsConfig);
@@ -40,9 +44,19 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/login" element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } />
+          <Route path="/register" element={
+            <Register />
+          } />
+          <Route path="/forgot-password" element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          } />
 
           {/* Protected Routes */}
           <Route path="/dashboard" element={
@@ -60,7 +74,31 @@ function App() {
               <ProfilePage />
             </ProtectedRoute>
           } />
-
+          <Route path="/explore" element={
+            <ProtectedRoute>
+              <ExplorePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/series/manage" element={
+            <ProtectedRoute>
+              <SeriesManagerPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/series/:seriesId" element={
+            <ProtectedRoute>
+              <SeriesDetailPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/lessons/:lessonId" element={
+            <ProtectedRoute>
+              <LessonPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/series/:seriesId/lessons/:lessonId" element={
+            <ProtectedRoute>
+              <LessonPage />
+            </ProtectedRoute>
+          } />
           {/* Catch-all route for 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

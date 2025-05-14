@@ -19,25 +19,25 @@ const Dashboard = () => {
     const courseData = [
         {
             id: 1,
-            title: "AWS Solutions Architect Associate",
+            title: "Creating Engaging Video Courses",
             progress: 65,
-            image: "https://via.placeholder.com/300x160/0ea5e9/ffffff?text=Solutions+Architect",
+            image: "https://via.placeholder.com/300x160/5a67d8/ffffff?text=Video+Courses",
             lessons: 48,
             level: "Intermediate"
         },
         {
             id: 2,
-            title: "AWS Developer Associate",
+            title: "Educational Content Marketing",
             progress: 30,
-            image: "https://via.placeholder.com/300x160/0ea5e9/ffffff?text=Developer",
+            image: "https://via.placeholder.com/300x160/5a67d8/ffffff?text=Content+Marketing",
             lessons: 56,
             level: "Intermediate"
         },
         {
             id: 3,
-            title: "AWS Cloud Practitioner",
+            title: "Basics of Online Teaching",
             progress: 100,
-            image: "https://via.placeholder.com/300x160/0ea5e9/ffffff?text=Cloud+Practitioner",
+            image: "https://via.placeholder.com/300x160/5a67d8/ffffff?text=Online+Teaching",
             lessons: 32,
             level: "Beginner",
             completed: true
@@ -47,24 +47,24 @@ const Dashboard = () => {
     const certifications = [
         {
             id: 1,
-            name: "AWS Cloud Practitioner",
-            status: "Certified",
+            name: "Certified Online Educator",
+            status: "Completed",
             date: "2023-09-15",
-            icon: "https://via.placeholder.com/60x60/0ea5e9/ffffff?text=AWS+CP"
+            icon: "https://via.placeholder.com/60x60/5a67d8/ffffff?text=COE"
         }
     ];
 
     const upcomingEvents = [
         {
             id: 1,
-            title: "AWS Architecture Best Practices",
+            title: "Building Engaging Educational Content",
             date: "2023-11-10",
             time: "10:00 AM - 11:30 AM",
             type: "Webinar"
         },
         {
             id: 2,
-            title: "Serverless Computing Workshop",
+            title: "Interactive Learning Workshops",
             date: "2023-11-15",
             time: "1:00 PM - 3:00 PM",
             type: "Workshop"
@@ -96,18 +96,18 @@ const Dashboard = () => {
                                 <div className="mt-3 pt-3 border-t">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-gray-600">Next Goal</span>
-                                        <span className="text-sm font-semibold text-blue-600">SAA</span>
+                                        <span className="text-sm font-semibold text-indigo-600">ADE</span>
                                     </div>
                                 </div>
                             </div>
                             <div className="bg-white rounded-lg shadow p-5 flex flex-col">
-                                <div className="text-gray-500 text-sm mb-1">Study Streak</div>
+                                <div className="text-gray-500 text-sm mb-1">Content Created</div>
                                 <div className="text-2xl font-bold text-gray-900 mb-2">7</div>
-                                <div className="text-sm text-gray-600">Days</div>
+                                <div className="text-sm text-gray-600">Items</div>
                                 <div className="mt-3 pt-3 border-t">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-gray-600">Total Hours</span>
-                                        <span className="text-sm font-semibold text-blue-600">32</span>
+                                        <span className="text-sm text-gray-600">Total Views</span>
+                                        <span className="text-sm font-semibold text-indigo-600">2.4K</span>
                                     </div>
                                 </div>
                             </div>
@@ -115,17 +115,17 @@ const Dashboard = () => {
 
                         {/* User Profile Card */}
                         <div className="bg-white rounded-lg shadow overflow-hidden">
-                            <div className="bg-blue-600 px-6 py-8 text-white">
+                            <div className="bg-indigo-600 px-6 py-8 text-white">
                                 <div className="flex justify-center">
                                     <div className="w-24 h-24 rounded-full bg-white p-1 shadow-lg">
-                                        <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-blue-600">
+                                        <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-indigo-600">
                                             {userAttributes.name ? userAttributes.name.charAt(0).toUpperCase() : 'U'}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="mt-4 text-center">
                                     <h3 className="text-xl font-bold">{userAttributes.name || 'User'}</h3>
-                                    <p className="text-blue-100 mt-1">{userAttributes.email || 'No email provided'}</p>
+                                    <p className="text-indigo-100 mt-1">{userAttributes.email || 'No email provided'}</p>
                                 </div>
                             </div>
                             <div className="p-6">
@@ -155,32 +155,32 @@ const Dashboard = () => {
                                         <h4 className="text-lg font-bold text-gray-900 mb-2">{course.title}</h4>
                                         <div className="flex items-center text-sm text-gray-600 mb-3">
                                             <span className="mr-3">{course.lessons} lessons</span>
-                                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{course.level}</span>
+                                            <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs">{course.level}</span>
                                         </div>
                                         <div className="mb-4">
                                             <div className="flex justify-between text-xs mb-1">
                                                 <span className="text-gray-600">Progress</span>
-                                                <span className="font-semibold text-blue-600">{course.progress}%</span>
+                                                <span className="font-semibold text-indigo-600">{course.progress}%</span>
                                             </div>
                                             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                                                <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${course.progress}%` }}></div>
+                                                <div className="bg-indigo-600 h-2 rounded-full" style={{ width: `${course.progress}%` }}></div>
                                             </div>
                                         </div>
-                                        <Link to={`/course/${course.id}`} className="block w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-center rounded-md text-white font-medium transition-colors">
+                                        <Link to={`/course/${course.id}`} className="block w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-center rounded-md text-white font-medium transition-colors">
                                             Continue
                                         </Link>
                                     </div>
                                 </div>
                                 ))}
                                 <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-6 hover:bg-gray-100 transition-colors">
-                                    <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-4">
+                                    <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mb-4">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                         </svg>
                                     </div>
-                                    <h4 className="text-lg font-medium text-gray-900 mb-2">Discover More Courses</h4>
+                                    <h4 className="text-lg font-medium text-gray-900 mb-2">Create New Content</h4>
                                     <p className="text-sm text-gray-600 text-center mb-4">
-                                        Explore our catalog of AWS courses and certifications
+                                        Start creating and sharing your educational content
                                     </p>
                                     <Link to="/courses" className="py-2 px-4 bg-white border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
                                         Browse Courses
@@ -207,7 +207,7 @@ const Dashboard = () => {
                                                         <span className="text-xs text-gray-500">Achieved on {new Date(cert.date).toLocaleDateString()}</span>
                                                     </div>
                                                 </div>
-                                                <Link to={`/certification/${cert.id}`} className="text-blue-600 hover:text-blue-700">
+                                                <Link to={`/certification/${cert.id}`} className="text-indigo-600 hover:text-indigo-700">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                     </svg>
@@ -216,7 +216,7 @@ const Dashboard = () => {
                                         ))}
                                     </div>
                                     <div className="p-4 border-t border-gray-200">
-                                        <Link to="/certifications" className="text-blue-600 hover:text-blue-700 font-medium flex items-center">
+                                        <Link to="/certifications" className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center">
                                             <span>View all certifications</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
@@ -226,16 +226,16 @@ const Dashboard = () => {
                                 </div>
                             ) : (
                                 <div className="bg-white rounded-lg shadow p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4">
+                                    <div className="w-16 h-16 mx-auto bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 mb-4">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                         </svg>
                                     </div>
                                     <h4 className="text-lg font-medium text-gray-900 mb-2">No certifications yet</h4>
                                     <p className="text-sm text-gray-600 mb-4">
-                                        Start your certification journey to boost your AWS career
+                                        Get certified as an educational content creator to boost your credibility
                                     </p>
-                                    <Link to="/certifications" className="inline-block py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+                                    <Link to="/certifications" className="inline-block py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors">
                                         Explore Certifications
                                     </Link>
                                 </div>
@@ -249,7 +249,7 @@ const Dashboard = () => {
                                     {upcomingEvents.map(event => (
                                         <div key={event.id} className="p-4">
                                             <div className="flex items-center justify-between mb-2">
-                                                <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                                <span className="inline-block px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full">
                                                     {event.type}
                                                 </span>
                                                 <span className="text-xs text-gray-500">{event.date}</span>
@@ -259,7 +259,7 @@ const Dashboard = () => {
                                         </div>
                                     ))}
                                     <div className="p-4">
-                                        <Link to="/events" className="text-blue-600 hover:text-blue-700 font-medium flex items-center">
+                                        <Link to="/events" className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center">
                                             <span>View all events</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
@@ -278,7 +278,7 @@ const Dashboard = () => {
             case 'courses':
                 return (
                     <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Your Courses</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">Your Educational Content</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {courseData.map(course => (
                                 <div key={course.id} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:shadow-xl hover:-translate-y-1">
@@ -287,19 +287,19 @@ const Dashboard = () => {
                                         <h4 className="text-lg font-bold text-gray-900 mb-2">{course.title}</h4>
                                         <div className="flex items-center text-sm text-gray-600 mb-4">
                                             <span className="mr-3">{course.lessons} lessons</span>
-                                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{course.level}</span>
+                                            <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs">{course.level}</span>
                                         </div>
                                         <div className="mb-4">
                                             <div className="flex justify-between text-xs mb-1">
                                                 <span className="text-gray-600">Progress</span>
-                                                <span className="font-semibold text-blue-600">{course.progress}%</span>
+                                                <span className="font-semibold text-indigo-600">{course.progress}%</span>
                                             </div>
                                             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                                                <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${course.progress}%` }}></div>
+                                                <div className="bg-indigo-600 h-2 rounded-full" style={{ width: `${course.progress}%` }}></div>
                                             </div>
                                         </div>
-                                        <Link to={`/course/${course.id}`} className="block w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-center rounded-md text-white font-medium transition-colors">
-                                            {course.completed ? 'Review Course' : 'Continue'}
+                                        <Link to={`/course/${course.id}`} className="block w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-center rounded-md text-white font-medium transition-colors">
+                                            {course.completed ? 'Review Content' : 'Continue Editing'}
                                         </Link>
                                     </div>
                                 </div>
@@ -338,7 +338,7 @@ const Dashboard = () => {
                         <div className="mt-6 flex space-x-4">
                             <Link
                                 to="/change-password"
-                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 Change Password
                             </Link>
@@ -360,7 +360,7 @@ const Dashboard = () => {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin h-12 w-12 rounded-full border-t-4 border-blue-600 border-solid"></div>
+                <div className="animate-spin h-12 w-12 rounded-full border-t-4 border-indigo-600 border-solid"></div>
             </div>
         );
     }
@@ -378,7 +378,7 @@ const Dashboard = () => {
                                 <button
                                     onClick={() => setActiveTab('overview')}
                                     className={`whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm ${activeTab === 'overview'
-                                        ? 'border-blue-600 text-blue-600'
+                                        ? 'border-indigo-600 text-indigo-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
@@ -387,16 +387,16 @@ const Dashboard = () => {
                                 <button
                                     onClick={() => setActiveTab('courses')}
                                     className={`whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm ${activeTab === 'courses'
-                                        ? 'border-blue-600 text-blue-600'
+                                        ? 'border-indigo-600 text-indigo-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
-                                    My Courses
+                                    My Content
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('profile')}
                                     className={`whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm ${activeTab === 'profile'
-                                        ? 'border-blue-600 text-blue-600'
+                                        ? 'border-indigo-600 text-indigo-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >

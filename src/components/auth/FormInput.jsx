@@ -11,6 +11,8 @@ const FormInput = ({
     required = false,
     autoComplete = 'on',
     icon = null,
+    readOnly = false,
+    disabled = false,
 }) => {
     const [focused, setFocused] = useState(false);
 
@@ -36,15 +38,17 @@ const FormInput = ({
                     required={required}
                     className={`block w-full px-4 py-3 ${icon ? 'pl-10' : ''} 
                     rounded-md border-2 focus:outline-none 
-                    ${focused ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-200'} 
+                    ${focused ? 'border-indigo-500 ring-2 ring-indigo-100' : 'border-gray-200'} 
                     ${error ? 'border-red-500 text-red-900 placeholder-red-300' : 'placeholder-gray-400'}
-                    transition-all duration-300 bg-white shadow-sm
-                    hover:shadow focus:shadow-md`}
+                    ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-75' : 'bg-white hover:shadow focus:shadow-md'}
+                    transition-all duration-300 shadow-sm`}
                     placeholder={placeholder}
-                    value={value}
+                    defaultValue={value}
                     onChange={onChange}
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
+                    readOnly={readOnly}
+                    disabled={disabled}
                 />
             </div>
             {error && (

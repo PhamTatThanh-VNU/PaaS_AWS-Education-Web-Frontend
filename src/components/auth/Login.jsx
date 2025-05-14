@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AuthCard from './AuthCard';
 import FormInput from './FormInput';
@@ -11,8 +11,19 @@ const Login = () => {
         password: '',
     });
     const [formErrors, setFormErrors] = useState({});
+    const [successMessage, setSuccessMessage] = useState('');
     const { signIn, loading, error } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Check for success message in location state (e.g., from registration)
+    useEffect(() => {
+        if (location.state?.message) {
+            setSuccessMessage(location.state.message);
+            // Clean up state to prevent showing message after refresh
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -71,6 +82,12 @@ const Login = () => {
             title="Sign in to your account"
             subtitle="Welcome back, please enter your details"
         >
+            {successMessage && (
+                <div className="bg-green-50 text-green-800 p-4 rounded-md mb-4">
+                    {successMessage}
+                </div>
+            )}
+
             {error && (
                 <div className="bg-red-50 text-red-800 p-4 rounded-md mb-4">
                     {error}
@@ -119,14 +136,14 @@ const Login = () => {
                             id="remember-me"
                             name="remember-me"
                             type="checkbox"
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                         />
                         <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                             Remember me
                         </label>
                     </div>
 
-                    <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+                    <Link to="/forgot-password" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
                         Forgot your password?
                     </Link>
                 </div>
@@ -138,7 +155,7 @@ const Login = () => {
                 <div className="text-center mt-4">
                     <p className="text-sm text-gray-600">
                         Don't have an account?{' '}
-                        <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                        <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
                             Sign up
                         </Link>
                     </p>
