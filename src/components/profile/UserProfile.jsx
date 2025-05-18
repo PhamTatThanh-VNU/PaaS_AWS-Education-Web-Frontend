@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { updateUserInDynamoDB, getUserFromDynamoDB } from '../../utils/dynamodbService';
 import Button from '../auth/Button';
 import FormInput from '../auth/FormInput';
 
@@ -26,35 +25,18 @@ const UserProfile = () => {
         const loadUserData = async () => {
             if (user && user.attributes?.email) {
                 try {
-                    // Get data from DynamoDB using email as key
-                    const dynamoDbData = await getUserFromDynamoDB(user.attributes.email);
-
-                    if (dynamoDbData) {
-                        setProfileData({
-                            fullName: dynamoDbData.fullName || user.attributes?.name || '',
-                            email: dynamoDbData.email || user.attributes?.email || '',
-                            birthdate: dynamoDbData.birthdate || user.attributes?.birthdate || '',
-                            gender: dynamoDbData.gender || user.attributes?.gender || '',
-                            phoneNumber: dynamoDbData.phoneNumber || user.attributes?.phone_number || '',
-                            address: dynamoDbData.address || '',
-                            city: dynamoDbData.city || '',
-                            country: dynamoDbData.country || '',
-                            bio: dynamoDbData.bio || '',
-                        });
-                    } else {
-                        // Fallback to Cognito attributes if DynamoDB data doesn't exist
-                        setProfileData({
-                            fullName: user.attributes?.name || '',
-                            email: user.attributes?.email || '',
-                            birthdate: user.attributes?.birthdate || '',
-                            gender: user.attributes?.gender || '',
-                            phoneNumber: user.attributes?.phone_number || '',
-                            address: '',
-                            city: '',
-                            country: '',
-                            bio: '',
-                        });
-                    }
+                    // Load user data directly from Cognito attributes
+                    setProfileData({
+                        fullName: user.attributes?.name || '',
+                        email: user.attributes?.email || '',
+                        birthdate: user.attributes?.birthdate || '',
+                        gender: user.attributes?.gender || '',
+                        phoneNumber: user.attributes?.phone_number || '',
+                        address: user.profileData?.address || '',
+                        city: user.profileData?.city || '',
+                        country: user.profileData?.country || '',
+                        bio: user.profileData?.bio || '',
+                    });
                 } catch (error) {
                     console.error('Error loading user data:', error);
                     setErrorMessage('Failed to load profile data. Please try again later.');
@@ -82,8 +64,9 @@ const UserProfile = () => {
 
         try {
             if (user && user.attributes?.email) {
-                // Update user in DynamoDB using email as key
-                await updateUserInDynamoDB(user.attributes.email, {
+                // Store profile data in local storage temporarily
+                // In a real app, you'd want to save this to a backend database
+                const updatedData = {
                     fullName: profileData.fullName,
                     phoneNumber: profileData.phoneNumber,
                     address: profileData.address,
@@ -91,7 +74,10 @@ const UserProfile = () => {
                     country: profileData.country,
                     bio: profileData.bio,
                     profileCompleted: true,
-                });
+                    updatedAt: new Date().toISOString()
+                };
+
+                localStorage.setItem(`userProfile_${user.attributes.email}`, JSON.stringify(updatedData));
 
                 setSuccessMessage('Profile updated successfully!');
 

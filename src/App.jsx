@@ -16,10 +16,6 @@ import PublicRoute from './components/auth/PublicRoute'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import ProfilePage from './pages/ProfilePage'
-import SeriesManagerPage from './pages/SeriesManagerPage'
-import SeriesDetailPage from './pages/SeriesDetailPage'
-import ExplorePage from './pages/ExplorePage'
-import LessonPage from './pages/LessonPage'
 
 // Initialize AWS Amplify with v6 configuration
 Amplify.configure(awsConfig);
@@ -74,31 +70,7 @@ function App() {
               <ProfilePage />
             </ProtectedRoute>
           } />
-          <Route path="/explore" element={
-            <ProtectedRoute>
-              <ExplorePage />
-            </ProtectedRoute>
-          } />
-          <Route path="/series/manage" element={
-            <ProtectedRoute>
-              <SeriesManagerPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/series/:seriesId" element={
-            <ProtectedRoute>
-              <SeriesDetailPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/lessons/:lessonId" element={
-            <ProtectedRoute>
-              <LessonPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/series/:seriesId/lessons/:lessonId" element={
-            <ProtectedRoute>
-              <LessonPage />
-            </ProtectedRoute>
-          } />
+
           {/* Catch-all route for 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

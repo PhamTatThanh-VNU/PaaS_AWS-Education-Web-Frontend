@@ -4,7 +4,7 @@ import {
     signOut as amplifySignOut, resetPassword, confirmResetPassword,
     updatePassword, getCurrentUser, fetchUserAttributes
 } from 'aws-amplify/auth';
-import { saveUserToDynamoDB, getUserFromDynamoDB } from '../utils/dynamodbService';
+// import { saveUserToDocumentDB, getUserFromDocumentDB } from '../utils/mongodbService';
 
 // Create Authentication Context
 const AuthContext = createContext();
@@ -42,30 +42,22 @@ export const AuthProvider = ({ children }) => {
             if (isSignedIn) {
                 const userData = await getCurrentUser();
                 const attributes = await fetchUserAttributes();
-                setUser({ ...userData, attributes });
 
-                // Try to get additional user data from DynamoDB
-                try {
-                    const dynamoDbUserData = await getUserFromDynamoDB(attributes.email);
-                    if (dynamoDbUserData) {
-                        // Merge the DynamoDB data with the user data
-                        setUser(prevUser => ({
-                            ...prevUser,
-                            dynamoDbData: dynamoDbUserData
-                        }));
-                    } else {
-                        // If user doesn't exist in DynamoDB yet, save them
-                        await saveUserToDynamoDB(userData.userId, attributes);
+                // Thiết lập thông tin người dùng chỉ từ Cognito, không cần DocumentDB
+                setUser({
+                    ...userData,
+                    attributes,
+                    // Có thể thêm các trường mặc định ở đây nếu cần
+                    profileData: {
+                        email: attributes.email,
+                        fullName: attributes.name || '',
+                        birthdate: attributes.birthdate || '',
+                        gender: attributes.gender || '',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        profileCompleted: false
                     }
-                } catch (dbErr) {
-                    console.error('Failed to fetch user data from DynamoDB:', dbErr);
-                    // Try to save user data if there was an error fetching
-                    try {
-                        await saveUserToDynamoDB(userData.userId, attributes);
-                    } catch (saveErr) {
-                        console.error('Failed to save user data to DynamoDB:', saveErr);
-                    }
-                }
+                });
             }
 
             return { isSignedIn, nextStep };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LessonViewer from '../components/courses/LessonViewer';
 
@@ -17,11 +17,10 @@ const LessonPage = () => {
             try {
                 // Giả lập API call
                 setTimeout(() => {
-                    // Tạo dữ liệu mock cho các bài học và series
+                    // Mock dữ liệu series
                     const mockSeries = {
-                        id: 100,
-                        title: 'AWS Cloud Practitioner',
-                        description: 'Khóa học toàn diện về AWS cho người mới bắt đầu',
+                        id: parseInt(seriesId),
+                        title: 'AWS từ cơ bản đến nâng cao',
                         sections: [
                             {
                                 id: 101,
@@ -40,13 +39,27 @@ const LessonPage = () => {
                                         duration: '18:30',
                                         type: 'video',
                                         completed: true
+                                    },
+                                    {
+                                        id: 1003,
+                                        title: 'Quản lý chi phí và tối ưu ngân sách',
+                                        duration: '22:15',
+                                        type: 'video',
+                                        completed: false
                                     }
                                 ]
                             },
                             {
                                 id: 102,
-                                title: 'Compute & Scaling',
+                                title: 'Dịch vụ Compute',
                                 lessons: [
+                                    {
+                                        id: 1004,
+                                        title: 'Amazon EC2 - Elastic Compute Cloud',
+                                        duration: '35:20',
+                                        type: 'video',
+                                        completed: false
+                                    },
                                     {
                                         id: 1005,
                                         title: 'Elastic Load Balancing và Auto Scaling',
@@ -213,49 +226,49 @@ const LessonPage = () => {
             }
         };
 
-fetchData();
+        fetchData();
     }, [seriesId, lessonId]);
 
-if (loading) {
-    return (
-        <div className="container mx-auto flex justify-center items-center h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-        </div>
-    );
-}
+    if (loading) {
+        return (
+            <div className="container mx-auto flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+            </div>
+        );
+    }
 
-if (error) {
-    return (
-        <div className="container mx-auto px-4 py-16">
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                <div className="flex">
-                    <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                    </div>
-                    <div className="ml-3">
-                        <p className="text-sm text-red-700">{error}</p>
+    if (error) {
+        return (
+            <div className="container mx-auto px-4 py-16">
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm text-red-700">{error}</p>
+                        </div>
                     </div>
                 </div>
+                <div className="mt-6">
+                    <button
+                        onClick={() => navigate(`/series/${seriesId}`)}
+                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                    >
+                        Quay lại series
+                    </button>
+                </div>
             </div>
-            <div className="mt-6">
-                <button
-                    onClick={() => navigate(`/series/${seriesId}`)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-                >
-                    Quay lại series
-                </button>
-            </div>
+        );
+    }
+
+    return (
+        <div className="container mx-auto px-4 py-6">
+            <LessonViewer lesson={lesson} series={series} allLessons={allLessons} />
         </div>
     );
-}
-
-return (
-    <div className="container mx-auto px-4 py-6">
-        <LessonViewer lesson={lesson} series={series} allLessons={allLessons} />
-    </div>
-);
 };
 
 export default LessonPage;

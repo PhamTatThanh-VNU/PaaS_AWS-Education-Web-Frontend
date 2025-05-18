@@ -1,35 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { getRecentConversations } from '../../utils/dynamodbService';
 
 const Header = () => {
     const { isAuthenticated, user, signOut } = useAuth();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [unreadMessages, setUnreadMessages] = useState(0);
-
-    // Check for unread messages
-    useEffect(() => {
-        if (isAuthenticated && user?.email) {
-            const checkForNewMessages = async () => {
-                try {
-                    const conversations = await getRecentConversations(user.email);
-                    // In a real app, you would track read/unread status
-                    // For now, we'll just simulate unread messages with the count
-                    setUnreadMessages(conversations.length > 0 ? Math.min(conversations.length, 5) : 0);
-                } catch (error) {
-                    console.error('Error fetching conversations:', error);
-                }
-            };
-
-            checkForNewMessages();
-
-            // Poll for new messages every minute
-            const intervalId = setInterval(checkForNewMessages, 60000);
-            return () => clearInterval(intervalId);
-        }
-    }, [isAuthenticated, user]);
 
     const handleSignOut = async () => {
         try {
