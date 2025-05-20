@@ -152,11 +152,17 @@ const Login = () => {
                     Sign in
                 </Button>
 
-                <div className="text-center mt-4">
+                <div className="text-center mt-4 space-y-2">
                     <p className="text-sm text-gray-600">
                         Don't have an account?{' '}
                         <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
                             Sign up
+                        </Link>
+                    </p>
+                    <p className="text-sm text-gray-600">
+                        Already registered but need verification?{' '}
+                        <Link to="/verify-email" className="font-medium text-indigo-600 hover:text-indigo-500">
+                            Resend verification
                         </Link>
                     </p>
                 </div>

@@ -2,9 +2,10 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import {
     signIn as amplifySignIn, signUp as amplifySignUp, confirmSignUp as amplifyConfirmSignUp,
     signOut as amplifySignOut, resetPassword, confirmResetPassword,
-    updatePassword, getCurrentUser, fetchUserAttributes
+    updatePassword, 
+    resendSignUpCode as amplifyResendSignUpCode
 } from 'aws-amplify/auth';
-// import { saveUserToDocumentDB, getUserFromDocumentDB } from '../utils/mongodbService';
+import { createUserProfile, getCurrentUserProfile } from '../services/userService';
 
 // Create Authentication Context
 const AuthContext = createContext();
@@ -18,11 +19,9 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkAuthState = async () => {
             try {
-                const userData = await getCurrentUser();
-                const attributes = await fetchUserAttributes();
-                setUser({ ...userData, attributes });
-            } catch (err) {
-                // User is not authenticated, which is fine
+                const userData = await getCurrentUserProfile();                
+                setUser(userData);
+            } catch (err) {                                
                 setUser(null);
             } finally {
                 setLoading(false);
@@ -38,28 +37,19 @@ export const AuthProvider = ({ children }) => {
         setError(null);
         try {
             const { isSignedIn, nextStep } = await amplifySignIn({ username: email, password });
-
+    
             if (isSignedIn) {
-                const userData = await getCurrentUser();
-                const attributes = await fetchUserAttributes();
-
-                // Thiết lập thông tin người dùng chỉ từ Cognito, không cần DocumentDB
-                setUser({
-                    ...userData,
-                    attributes,
-                    // Có thể thêm các trường mặc định ở đây nếu cần
-                    profileData: {
-                        email: attributes.email,
-                        fullName: attributes.name || '',
-                        birthdate: attributes.birthdate || '',
-                        gender: attributes.gender || '',
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        profileCompleted: false
-                    }
-                });
+                try {
+                    // Use getCurrentUserProfile from userService instead of AWS Cognito's getCurrentUser
+                    const userData = await getCurrentUserProfile();                    
+                    
+                    // Combine profile data from API with Cognito attributes
+                    setUser(userData);
+                } catch (profileErr) {
+                    throw new Error('Failed to fetch user profile');
+                }
             }
-
+    
             return { isSignedIn, nextStep };
         } catch (err) {
             setError(err.message || 'Failed to sign in');
@@ -84,10 +74,7 @@ export const AuthProvider = ({ children }) => {
 
             if (attributes.gender) {
                 userAttributes['gender'] = attributes.gender;
-            }
-
-            // Store password temporarily in session storage for automatic login after confirmation
-            sessionStorage.setItem(`temp_password_${email}`, password);
+            }            
 
             const result = await amplifySignUp({
                 username: email,
@@ -95,7 +82,18 @@ export const AuthProvider = ({ children }) => {
                 options: {
                     userAttributes
                 }
+            });            
+            // Tạo profile trong MongoDB ngay sau khi đăng ký
+            await createUserProfile({
+                userId: result.userId || email.replace(/[@.]/g, '-'),
+                email: email,   
+                name: userAttributes.name || email.split('@')[0],
+                gender: userAttributes.gender || '',
+                birthdate: userAttributes.birthdate || ''
             });
+            // Store password and attributes temporarily for use during confirmation
+            sessionStorage.setItem(`temp_password_${email}`, password);
+            sessionStorage.setItem(`temp_attributes_${email}`, JSON.stringify(userAttributes));
             return result;
         } catch (err) {
             setError(err.message || 'Failed to sign up');
@@ -110,15 +108,16 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
         setError(null);
         try {
+            // Confirm the signup with Cognito
             const result = await amplifyConfirmSignUp({
                 username: email,
                 confirmationCode: code
             });
-
-            // We only confirm the account, not automatically sign in
-            // Clean up the temporary password
+            
+            // Clean up stored data
             sessionStorage.removeItem(`temp_password_${email}`);
-
+            sessionStorage.removeItem(`temp_attributes_${email}`);
+            
             return result;
         } catch (err) {
             setError(err.message || 'Failed to confirm sign up');
@@ -192,6 +191,22 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Resend sign up verification code
+    const resendSignUpCode = async (email) => {
+        setLoading(true);
+        setError(null);
+        try {
+            return await amplifyResendSignUpCode({
+                username: email
+            });
+        } catch (err) {
+            setError(err.message || 'Failed to resend verification code');
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const value = {
         user,
         loading,
@@ -203,7 +218,8 @@ export const AuthProvider = ({ children }) => {
         forgotPassword,
         forgotPasswordSubmit,
         changePassword,
-        isAuthenticated: !!user,
+        resendSignUpCode,
+        isAuthenticated: !!user,        
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

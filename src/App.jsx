@@ -4,12 +4,14 @@ import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito'
 import { awsConfig } from './config/aws-config'
 import { AuthProvider } from './context/AuthContext'
 import './App.css'
+import './styles/animations.css'
 
 // Auth Components
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
 import ForgotPassword from './components/auth/ForgotPassword'
 import ChangePassword from './components/auth/ChangePassword'
+import ResendVerification from './components/auth/ResendVerification'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import PublicRoute from './components/auth/PublicRoute'
 // Pages
@@ -52,6 +54,9 @@ function App() {
             <PublicRoute>
               <ForgotPassword />
             </PublicRoute>
+          } />
+          <Route path="/verify-email" element={            
+              <ResendVerification />            
           } />
 
           {/* Protected Routes */}

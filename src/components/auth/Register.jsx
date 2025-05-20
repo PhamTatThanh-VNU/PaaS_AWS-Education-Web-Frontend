@@ -1,9 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AuthCard from './AuthCard';
 import FormInput from './FormInput';
 import Button from './Button';
+import PasswordStrengthIndicator from './PasswordStrengthIndicator';
+
+// Debounce hook
+function useDebounce(value, delay) {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+    
+    return debouncedValue;
+}
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -14,10 +32,16 @@ const Register = () => {
         password: '',
         confirmPassword: '',
     });
+    const [tempErrors, setTempErrors] = useState({});
     const [formErrors, setFormErrors] = useState({});
     const [step, setStep] = useState(1); // 1: registration form, 2: confirmation code
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    
+    // Debounce validation errors to give user time to type
+    const debouncedErrors = useDebounce(tempErrors, 800);
     const [confirmationCode, setConfirmationCode] = useState('');
-    const { signUp, confirmSignUp, loading, error } = useAuth();
+    const [successMessage, setSuccessMessage] = useState('');
+    const { signUp, confirmSignUp, resendSignUpCode, loading, error } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -34,7 +58,45 @@ const Register = () => {
                 [id]: '',
             });
         }
+        
+        // Real-time validation for common fields - set to tempErrors first
+        if (id === 'email' && value) {
+            const emailRegex = /\S+@\S+\.\S+/;
+            if (!emailRegex.test(value)) {
+                setTempErrors(prev => ({
+                    ...prev,
+                    email: 'Please enter a valid email address'
+                }));
+            } else {
+                setTempErrors(prev => ({
+                    ...prev,
+                    email: ''
+                }));
+            }
+        }
+        
+        if (id === 'confirmPassword' && formData.password && value) {
+            if (formData.password !== value) {
+                setTempErrors(prev => ({
+                    ...prev,
+                    confirmPassword: 'Passwords do not match'
+                }));
+            } else {
+                setTempErrors(prev => ({
+                    ...prev,
+                    confirmPassword: ''
+                }));
+            }
+        }
     };
+    
+    // Update formErrors from debounced temp errors
+    useEffect(() => {
+        setFormErrors(prev => ({
+            ...prev,
+            ...debouncedErrors
+        }));
+    }, [debouncedErrors]);
 
     const validateForm = () => {
         let errors = {};
@@ -96,15 +158,15 @@ const Register = () => {
                 birthdate: formData.birthdate,
                 gender: formData.gender,
             });
-            setStep(2);
-            // console.log(step)
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setStep(2);
+                setIsTransitioning(false);
+            }, 300);            
         } catch (err) {
-            // Error is handled in context and will be displayed from there
+            throw err;
         }
-    };
-    useEffect(() => {
-        console.log(step)
-    }, [step]);
+    };    
     const handleConfirmSubmit = async (e) => {
         e.preventDefault();
 
@@ -136,15 +198,22 @@ const Register = () => {
                 ? "Get started with your AWS education account"
                 : "We've sent a code to your email address"
             }
+            isTransitioning={isTransitioning}
         >
             {error && (
-                <div className="bg-red-50 text-red-800 p-4 rounded-md mb-4">
+                <div className="bg-red-50 text-red-800 p-4 rounded-md mb-4 animate-fadeIn animate-shake border-l-4 border-red-500">
                     {error}
                 </div>
             )}
 
+            {successMessage && (
+                <div className="bg-green-50 text-green-800 p-4 rounded-md mb-4 animate-fadeIn border-l-4 border-green-500">
+                    {successMessage}
+                </div>
+            )}
+
             {step === 1 ? (
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                <form className="mt-8 space-y-6 animate-fadeIn focus-transition" onSubmit={handleSubmit}>
                     <FormInput
                         id="fullName"
                         label="Full Name"
@@ -155,6 +224,7 @@ const Register = () => {
                         value={formData.fullName}
                         onChange={handleChange}
                         error={formErrors.fullName}
+                        autoFocus={true}
                         icon={
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -223,22 +293,27 @@ const Register = () => {
                         )}
                     </div>
 
-                    <FormInput
-                        id="password"
-                        label="Password"
-                        type="password"
-                        autoComplete="new-password"
-                        required
-                        placeholder="••••••••"
-                        value={formData.password}
-                        onChange={handleChange}
-                        error={formErrors.password}
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                            </svg>
-                        }
-                    />
+                    <div className="space-y-1">
+                        <FormInput
+                            id="password"
+                            label="Password"
+                            type="password"
+                            autoComplete="new-password"
+                            required
+                            placeholder="••••••••"
+                            value={formData.password}
+                            onChange={handleChange}
+                            error={formErrors.password}
+                            icon={
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                </svg>
+                            }
+                        />
+                        <PasswordStrengthIndicator password={formData.password} />
+                    </div>
+
+                    <PasswordStrengthIndicator password={formData.password} />
 
                     <FormInput
                         id="confirmPassword"
@@ -261,17 +336,23 @@ const Register = () => {
                         Sign up
                     </Button>
 
-                    <div className="text-center mt-4">
+                    <div className="text-center mt-4 space-y-2">
                         <p className="text-sm text-gray-600">
                             Already have an account?{' '}
-                            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
                                 Sign in
+                            </Link>
+                        </p>
+                        <p className="text-sm text-gray-600">
+                            Already registered but need verification?{' '}
+                            <Link to="/verify-email" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                Verify email
                             </Link>
                         </p>
                     </div>
                 </form>
             ) : (
-                <form className="mt-8 space-y-6" onSubmit={handleConfirmSubmit}>
+                <form className="mt-8 space-y-6 animate-fadeIn focus-transition" onSubmit={handleConfirmSubmit}>
                     <FormInput
                         id="confirmationCode"
                         label="Confirmation Code"
@@ -279,6 +360,7 @@ const Register = () => {
                         required
                         placeholder="Enter the code sent to your email"
                         value={confirmationCode}
+                        autoFocus={true}
                         onChange={(e) => {
                             setConfirmationCode(e.target.value);
                             if (formErrors.confirmationCode) {
@@ -300,12 +382,12 @@ const Register = () => {
                             Didn't receive the code?{' '}
                             <button
                                 type="button"
-                                className="font-medium text-blue-600 hover:text-blue-500"
-                                onClick={() => signUp(formData.email, formData.password, {
-                                    name: formData.fullName,
-                                    birthdate: formData.birthdate,
-                                    gender: formData.gender,
-                                })}
+                                className="font-medium text-indigo-600 hover:text-indigo-500"
+                                onClick={() => {
+                                    resendSignUpCode(formData.email);
+                                    setSuccessMessage('Verification code has been sent again to your email address');
+                                    // Không cần chuyển trang vì đã ở trang nhập code
+                                }}
                             >
                                 Resend code
                             </button>

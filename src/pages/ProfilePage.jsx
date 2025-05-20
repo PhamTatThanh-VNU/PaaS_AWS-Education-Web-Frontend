@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import UserProfile from '../components/profile/UserProfile';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 const ProfilePage = () => {
-    const { user, isAuthenticated, loading } = useAuth();
+    const {loading } = useAuth();
     const [activeTab, setActiveTab] = useState('profile');
 
     // Redirect to login if not authenticated is handled by ProtectedRoute

@@ -1,18 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/auth/Button';
 import MainLayout from '../components/layout/MainLayout';
 
 const Dashboard = () => {
-    const { user, loading } = useAuth();
+    const {user, loading } = useAuth();
     const [userAttributes, setUserAttributes] = useState({});
     const [activeTab, setActiveTab] = useState('overview');
 
-    useEffect(() => {
-        // Extract user attributes from Cognito user object
-        if (user && user.attributes) {
-            setUserAttributes(user.attributes);
+    useEffect(() => {        
+        if (user) {
+            setUserAttributes(user.data);
         }
     }, [user]);
 
@@ -107,7 +106,7 @@ const Dashboard = () => {
                                 <div className="mt-3 pt-3 border-t">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-gray-600">Total Views</span>
-                                        <span className="text-sm font-semibold text-indigo-600">2.4K</span>
+                                        <span classNuserAttributesame="text-sm font-semibold text-indigo-600">2.4K</span>
                                     </div>
                                 </div>
                             </div>

@@ -71,7 +71,7 @@ const Home = () => {
                                     className="px-5 py-2.5 rounded-lg bg-white/10 text-white font-medium text-base border border-white/30 hover:bg-white/20 transition-all duration-200"
                                 >
                                     Sign In
-                                </Link>
+                                </Link>                                
                             </div>
                             <div className="mt-6 flex items-center">
                                 <div className="flex -space-x-2">

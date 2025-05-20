@@ -140,11 +140,17 @@ const ForgotPassword = () => {
                         Send reset code
                     </Button>
 
-                    <div className="text-center mt-4">
+                    <div className="text-center mt-4 space-y-2">
                         <p className="text-sm text-gray-600">
                             Remember your password?{' '}
-                            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
                                 Sign in
+                            </Link>
+                        </p>
+                        <p className="text-sm text-gray-600">
+                            Need to verify your email?{' '}
+                            <Link to="/verify-email" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                Verify email
                             </Link>
                         </p>
                     </div>
@@ -229,7 +235,7 @@ const ForgotPassword = () => {
                             Didn't receive the code?{' '}
                             <button
                                 type="button"
-                                className="font-medium text-primary-600 hover:text-primary-500"
+                                className="font-medium text-indigo-600 hover:text-indigo-500"
                                 onClick={() => forgotPassword(email)}
                             >
                                 Resend code
