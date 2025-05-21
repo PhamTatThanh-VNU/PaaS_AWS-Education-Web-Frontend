@@ -188,16 +188,6 @@ const lessonApi = {
     }
   },
 
-  // Đánh dấu bài học đã hoàn thành
-  markLessonAsCompleted: async (seriesId, lessonId) => {
-    try {
-      const response = await api.post(`/series/${seriesId}/lessons/${lessonId}/complete`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
   // Xóa bài học
   deleteLesson: async (seriesId, lessonId) => {
     try {

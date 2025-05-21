@@ -2,15 +2,35 @@
 
 /* Form element animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    50% {
+        transform: translateX(5px);
+    }
+
+    75% {
+        transform: translateX(-5px);
+    }
 }
 
 .animate-fadeIn {
@@ -44,13 +64,14 @@
     .animate-fadeIn {
         animation-duration: 0.2s;
     }
-    
+
     .focus-transition:focus-within {
-        transform: scale(1); /* Disable scale on mobile */
+        transform: scale(1);
+        /* Disable scale on mobile */
     }
-    
+
     /* Make form buttons easier to tap on mobile */
-    button, 
+    button,
     input[type="submit"],
     input[type="button"] {
         min-height: 44px;
@@ -246,4 +267,41 @@
 
 .animate-glow {
     animation: glow 2s ease-in-out infinite;
+}
+
+/* Gradient animation for backgrounds */
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 8s ease infinite;
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slideUp {
+    animation: slideUp 0.8s ease-out forwards;
 }

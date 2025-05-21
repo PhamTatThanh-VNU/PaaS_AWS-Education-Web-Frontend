@@ -2,13 +2,16 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import {
     signIn as amplifySignIn, signUp as amplifySignUp, confirmSignUp as amplifyConfirmSignUp,
     signOut as amplifySignOut, resetPassword, confirmResetPassword,
-    updatePassword, 
+    updatePassword,
     resendSignUpCode as amplifyResendSignUpCode
 } from 'aws-amplify/auth';
-import { createUserProfile, getCurrentUserProfile } from '../services/userService';
+import { createUserProfile, getCurrentUserProfile } from '../services/UserService';
 
 // Create Authentication Context
 const AuthContext = createContext();
+
+// Export AuthContext so components can import and use it
+export { AuthContext };
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -19,9 +22,9 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkAuthState = async () => {
             try {
-                const userData = await getCurrentUserProfile();                
+                const userData = await getCurrentUserProfile();
                 setUser(userData);
-            } catch (err) {                                
+            } catch (err) {
                 setUser(null);
             } finally {
                 setLoading(false);
@@ -37,19 +40,19 @@ export const AuthProvider = ({ children }) => {
         setError(null);
         try {
             const { isSignedIn, nextStep } = await amplifySignIn({ username: email, password });
-    
+
             if (isSignedIn) {
                 try {
                     // Use getCurrentUserProfile from userService instead of AWS Cognito's getCurrentUser
-                    const userData = await getCurrentUserProfile();                    
-                    
+                    const userData = await getCurrentUserProfile();
+
                     // Combine profile data from API with Cognito attributes
                     setUser(userData);
                 } catch (profileErr) {
                     throw new Error('Failed to fetch user profile');
                 }
             }
-    
+
             return { isSignedIn, nextStep };
         } catch (err) {
             setError(err.message || 'Failed to sign in');
@@ -74,7 +77,7 @@ export const AuthProvider = ({ children }) => {
 
             if (attributes.gender) {
                 userAttributes['gender'] = attributes.gender;
-            }            
+            }
 
             const result = await amplifySignUp({
                 username: email,
@@ -82,11 +85,11 @@ export const AuthProvider = ({ children }) => {
                 options: {
                     userAttributes
                 }
-            });            
+            });
             // Tạo profile trong MongoDB ngay sau khi đăng ký
             await createUserProfile({
                 userId: result.userId || email.replace(/[@.]/g, '-'),
-                email: email,   
+                email: email,
                 name: userAttributes.name || email.split('@')[0],
                 gender: userAttributes.gender || '',
                 birthdate: userAttributes.birthdate || ''
@@ -113,11 +116,11 @@ export const AuthProvider = ({ children }) => {
                 username: email,
                 confirmationCode: code
             });
-            
+
             // Clean up stored data
             sessionStorage.removeItem(`temp_password_${email}`);
             sessionStorage.removeItem(`temp_attributes_${email}`);
-            
+
             return result;
         } catch (err) {
             setError(err.message || 'Failed to confirm sign up');
@@ -219,7 +222,7 @@ export const AuthProvider = ({ children }) => {
         forgotPasswordSubmit,
         changePassword,
         resendSignUpCode,
-        isAuthenticated: !!user,        
+        isAuthenticated: !!user,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -18,6 +18,10 @@ import PublicRoute from './components/auth/PublicRoute'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import ProfilePage from './pages/ProfilePage'
+import ExplorePage from './pages/ExplorePage'
+import SeriesManagementPage from './pages/SeriesManagementPage'
+import SeriesDetailPage from './pages/SeriesDetailPage'
+import LessonDetailPage from './components/lessons/LessonPage'
 
 // Initialize AWS Amplify with v6 configuration
 Amplify.configure(awsConfig);
@@ -55,8 +59,8 @@ function App() {
               <ForgotPassword />
             </PublicRoute>
           } />
-          <Route path="/verify-email" element={            
-              <ResendVerification />            
+          <Route path="/verify-email" element={
+            <ResendVerification />
           } />
 
           {/* Protected Routes */}
@@ -73,6 +77,35 @@ function App() {
           <Route path="/profile" element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/explore" element={
+            <ProtectedRoute>
+              <ExplorePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/series" element={
+            <ProtectedRoute>
+              <SeriesManagementPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/create-series" element={
+            <ProtectedRoute>
+              <Navigate to="/series?action=create" replace />
+            </ProtectedRoute>
+          } />
+
+          {/* Series Routes */}
+          <Route path="/series/:seriesId" element={
+            <ProtectedRoute>
+              <SeriesDetailPage />
+            </ProtectedRoute>
+          } />
+
+          {/* Lesson Routes */}
+          <Route path="/series/:seriesId/lessons/:lessonId" element={
+            <ProtectedRoute>
+              <LessonDetailPage />
             </ProtectedRoute>
           } />
 

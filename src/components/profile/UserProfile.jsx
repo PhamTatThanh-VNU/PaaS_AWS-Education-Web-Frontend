@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import Button from '../auth/Button';
 import FormInput from '../auth/FormInput';
 import FormSelect from '../auth/FormSelect';
-import { updateUserProfile } from '../../services/userService';
+import { updateUserProfile } from '../../services/UserService';
 
 const UserProfile = () => {
     const { user } = useAuth();

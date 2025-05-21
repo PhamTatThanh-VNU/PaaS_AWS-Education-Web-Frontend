@@ -101,7 +101,7 @@ const Home = () => {
                                         <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                                     </div>
                                     <img
-                                        src="https://via.placeholder.com/600x400/5a67d8/ffffff?text=Course+Dashboard"
+                                        src="https://www.gettyimages.com/detail/photo/man-working-at-a-creative-office-using-his-computer-royalty-free-image/1332176260 "
                                         alt="Course Creator Dashboard"
                                         className="rounded shadow-md w-full"
                                     />
