@@ -1,46 +1,45 @@
-# EduConnect Platform (formerly AWS Education Web Platform)
+# EduConnect Platform
 
-This is the frontend application for the EduConnect education and connection platform.
+This is the frontend application for the EduConnect education and connection platform, built with React and Vite.
 
-## Setup Environment Variables
+## Table of Contents
 
-Before running the application, you need to set up the required environment variables:
+- [Quick Start](#quick-start)
+- [Docker Deployment](#docker-deployment)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Development Commands](#development-commands)
+- [Troubleshooting](#troubleshooting)
 
-1. Create a `.env` file in the root directory of the project
-2. Copy the contents from `.env.example` to your `.env` file
-3. Fill in your AWS Cognito and DynamoDB configuration values:
+## Quick Start
+
+### Development Environment
+
+#### Prerequisites
+
+- Node.js v16+ (v22 recommended)
+- npm or yarn
+- Docker (for containerization)
+
+#### Setup Environment Variables
+
+1. Create a `.env` file in the root directory of the project:
+
+```bash
+cp .env.example .env  # If .env.example exists, otherwise create manually
+```
+
+2. Configure the following environment variables in your `.env` file:
 
 ```
-VITE_AWS_REGION=your-aws-region
+VITE_AWS_REGION=ap-southeast-1
 VITE_AWS_USER_POOL_ID=your-user-pool-id
 VITE_AWS_USER_POOL_CLIENT_ID=your-user-pool-client-id
-VITE_AWS_ACCESS_KEY_ID=your-aws-access-key
-VITE_AWS_SECRET_ACCESS_KEY=your-aws-secret-key
-VITE_DYNAMODB_USER_TABLE=Users
-VITE_DYNAMODB_MESSAGE_TABLE=Messages
+VITE_BACKEND_URL=http://localhost:3000
 ```
 
-## Setting Up DynamoDB Tables
-
-The application requires two DynamoDB tables:
-
-### 1. Users Table
-
-Create a table with the following settings:
-- **Table Name**: `Users` (or the value from `VITE_DYNAMODB_USER_TABLE`)
-- **Partition Key**: `email` (String)
-- **Sort Key**: none
-
-### 2. Messages Table
-
-Create a table with the following settings:
-- **Table Name**: `Messages` (or the value from `VITE_DYNAMODB_MESSAGE_TABLE`)
-- **Partition Key**: `conversationId` (String)
-- **Sort Key**: `messageId` (String)
-
-## Getting Started
-
-To run the application locally:
+#### Running the Application Locally
 
 ```bash
 # Install dependencies
@@ -48,6 +47,54 @@ npm install
 
 # Start development server
 npm run dev
+```
+
+The application will be available at [http://localhost:5173](http://localhost:5173).
+
+The application will be available at [http://localhost:5173](http://localhost:5173).
+
+## Docker Deployment
+
+### Using the Build Script
+
+1. Make sure the build script is executable:
+
+```bash
+chmod +x buildimage.sh
+```
+
+2. Run the build script to create a Docker image:
+
+```bash
+./buildimage.sh
+```
+
+3. Run the Docker container:
+
+```bash
+docker run -d -p 80:80 --name educonnect-app educonnect-app
+```
+
+### Checking if the Container is Running
+
+```bash
+docker ps | grep educonnect-app
+```
+
+### Viewing Container Logs
+
+```bash
+docker logs educonnect-app
+```
+
+### Stopping and Removing the Container
+
+```bash
+# Stop the container
+docker stop educonnect-app
+
+# Remove the container
+docker rm educonnect-app
 ```
 
 ## Features
@@ -62,9 +109,65 @@ npm run dev
 
 - React (with Vite)
 - AWS Cognito for authentication
-- AWS DynamoDB for data storage
 - Tailwind CSS for styling
+- Nginx for serving the application
 
-## Expanding the ESLint configuration
+## Development Commands
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Lint code
+npm run lint
+```
+
+## Project Structure
+
+The project follows a structured organization:
+
+```
+src/
+  ├── assets/          # Static assets (images, icons)
+  ├── components/      # Reusable UI components
+  │   ├── auth/        # Authentication related components
+  │   ├── common/      # Shared UI elements
+  │   ├── explore/     # Explore page components
+  │   ├── layout/      # Layout components (Header, Footer)
+  │   ├── lessons/     # Lesson related components
+  │   ├── profile/     # User profile components
+  │   └── series/      # Series/course components
+  ├── config/          # Configuration files
+  ├── context/         # React context providers
+  ├── hooks/           # Custom React hooks
+  ├── pages/           # Page components
+  ├── services/        # API and service integrations
+  └── styles/          # CSS and style files
+```
+
+## Troubleshooting
+
+### Common Docker Issues
+
+1. **Environment Variables Missing**: Make sure all required environment variables are passed to the Docker build.
+
+2. **Nginx Configuration**: If the application shows a default Nginx page instead of the React app, check that:
+   - The `nginx.conf` file exists in your project root
+   - The build process completed successfully
+   - The Dockerfile correctly copies files from the build stage
+
+3. **Docker Build Errors**: Common issues include:
+   - Missing `.env` file or nginx.conf - fixed by the approach in the Dockerfile
+   - Network timeouts during npm install - try again or use a different network
+   - Insufficient memory during build - increase Docker's resource allocation
+
+4. **AWS Cognito Connection Issues**: Check if the correct AWS region and pool IDs are configured.

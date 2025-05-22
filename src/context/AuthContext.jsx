@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(userData);
             } catch (err) {
                 setUser(null);
+                throw Error(err);
             } finally {
                 setLoading(false);
             }
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }) => {
                     // Combine profile data from API with Cognito attributes
                     setUser(userData);
                 } catch (profileErr) {
-                    throw new Error('Failed to fetch user profile');
+                    throw Error(profileErr);
                 }
             }
 
@@ -227,8 +228,6 @@ export const AuthProvider = ({ children }) => {
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-// Custom hook to use auth context
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

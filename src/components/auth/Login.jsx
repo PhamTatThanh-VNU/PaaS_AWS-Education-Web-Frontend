@@ -73,7 +73,7 @@ const Login = () => {
             await signIn(formData.email, formData.password);
             navigate('/dashboard');
         } catch (err) {
-            // Error is handled in context and will be displayed from there
+            throw Error(err);
         }
     };
 

@@ -76,7 +76,7 @@ const ResendVerification = () => {
                 }
             });
         } catch (err) {
-            // Error is handled in context
+            throw Error(err);
         }
     };
 

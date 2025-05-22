@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
  * @param {boolean} isSidebarOpen - Whether sidebar is open
  * @param {Function} toggleSidebar - Function to toggle sidebar
  */
-const LessonHeader = ({ seriesId, series, allLessons, isSidebarOpen, toggleSidebar }) => {
+const LessonHeader = ({ seriesId, series, isSidebarOpen, toggleSidebar }) => {
 
     return (
         <header className="bg-white shadow-md sticky top-0 z-40">

@@ -11,7 +11,7 @@ const ForgotPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [formErrors, setFormErrors] = useState({});
-    const [step, setStep] = useState(1); 
+    const [step, setStep] = useState(1);
     const { forgotPassword, forgotPasswordSubmit, loading, error } = useAuth();
     const navigate = useNavigate();
 
@@ -71,7 +71,7 @@ const ForgotPassword = () => {
             await forgotPassword(email);
             setStep(2);
         } catch (err) {
-            // Error is handled in context
+            throw Error(err);
         }
     };
 
@@ -90,7 +90,7 @@ const ForgotPassword = () => {
                 }
             });
         } catch (err) {
-            // Error is handled in context
+            throw Error(err);
         }
     };
 

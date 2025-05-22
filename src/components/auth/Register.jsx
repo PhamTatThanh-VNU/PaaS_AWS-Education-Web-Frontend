@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AuthCard from './AuthCard';
@@ -9,17 +9,17 @@ import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 // Debounce hook
 function useDebounce(value, delay) {
     const [debouncedValue, setDebouncedValue] = useState(value);
-    
+
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedValue(value);
         }, delay);
-        
+
         return () => {
             clearTimeout(handler);
         };
     }, [value, delay]);
-    
+
     return debouncedValue;
 }
 
@@ -36,7 +36,7 @@ const Register = () => {
     const [formErrors, setFormErrors] = useState({});
     const [step, setStep] = useState(1); // 1: registration form, 2: confirmation code
     const [isTransitioning, setIsTransitioning] = useState(false);
-    
+
     // Debounce validation errors to give user time to type
     const debouncedErrors = useDebounce(tempErrors, 800);
     const [confirmationCode, setConfirmationCode] = useState('');
@@ -58,7 +58,7 @@ const Register = () => {
                 [id]: '',
             });
         }
-        
+
         // Real-time validation for common fields - set to tempErrors first
         if (id === 'email' && value) {
             const emailRegex = /\S+@\S+\.\S+/;
@@ -74,7 +74,7 @@ const Register = () => {
                 }));
             }
         }
-        
+
         if (id === 'confirmPassword' && formData.password && value) {
             if (formData.password !== value) {
                 setTempErrors(prev => ({
@@ -89,7 +89,7 @@ const Register = () => {
             }
         }
     };
-    
+
     // Update formErrors from debounced temp errors
     useEffect(() => {
         setFormErrors(prev => ({
@@ -162,11 +162,11 @@ const Register = () => {
             setTimeout(() => {
                 setStep(2);
                 setIsTransitioning(false);
-            }, 300);            
+            }, 300);
         } catch (err) {
             throw err;
         }
-    };    
+    };
     const handleConfirmSubmit = async (e) => {
         e.preventDefault();
 
@@ -187,7 +187,7 @@ const Register = () => {
                 }
             });
         } catch (err) {
-            // Error is handled in context
+            throw Error(err);
         }
     };
 

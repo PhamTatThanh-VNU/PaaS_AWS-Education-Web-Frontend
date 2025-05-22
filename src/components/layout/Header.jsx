@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
-    const { isAuthenticated, user, signOut } = useAuth();
+    const { isAuthenticated, signOut } = useAuth();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -55,7 +55,7 @@ const Header = () => {
                                             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                                         </svg>
                                     </button>
-                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right">                                        
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right">
                                         <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">Profile</Link>
                                         <Link to="/change-password" className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">Change Password</Link>
                                         <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
@@ -107,7 +107,7 @@ const Header = () => {
                         </nav>
 
                         {isAuthenticated ? (
-                            <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200">                                
+                            <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200">
                                 <Link to="/profile" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">Profile</Link>
                                 <Link to="/change-password" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">Change Password</Link>
                                 <button onClick={handleSignOut} className="text-left text-gray-600 hover:text-indigo-600 transition-colors font-medium">

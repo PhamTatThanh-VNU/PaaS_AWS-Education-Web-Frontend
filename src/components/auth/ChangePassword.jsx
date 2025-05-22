@@ -85,6 +85,7 @@ const ChangePassword = () => {
             }, 2000);
         } catch (err) {
             // Error is handled in context
+            throw Error(err);
         }
     };
 
