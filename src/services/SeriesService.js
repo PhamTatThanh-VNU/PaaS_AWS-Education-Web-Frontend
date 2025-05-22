@@ -104,7 +104,7 @@ class SeriesService {
     } catch (error) {
       throw this.handleError(error);
     }
-  }
+  }    
   /**
    * Cập nhật một phần thông tin series
    * @param {string|number} seriesId - ID của series cần cập nhật
@@ -180,6 +180,26 @@ class SeriesService {
   async deleteSeries(seriesId) {
     try {
       const response = await this.api.delete(`/series/${seriesId}`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Tìm kiếm series theo từ khóa trong tiêu đề
+   * @param {string} keyword - Từ khóa tìm kiếm trong tiêu đề series
+   * @returns {Promise} - Promise với danh sách series phù hợp với từ khóa
+   */
+  async searchSeriesByTitle(keyword) {
+    try {
+      if (!keyword || keyword.trim() === '') {
+        throw new Error('Từ khóa tìm kiếm không được để trống');
+      }
+      
+      const response = await this.api.get('/series/search', {
+        params: { keyword }
+      });
       return response.data;
     } catch (error) {
       throw this.handleError(error);

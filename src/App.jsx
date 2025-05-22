@@ -5,6 +5,7 @@ import { awsConfig } from './config/aws-config'
 import { AuthProvider } from './context/AuthContext'
 import './App.css'
 import './styles/animations.css'
+import './styles/explore.css'
 
 // Auth Components
 import Login from './components/auth/Login'

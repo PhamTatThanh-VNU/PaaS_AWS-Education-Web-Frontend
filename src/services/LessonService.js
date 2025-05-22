@@ -48,7 +48,19 @@ class LessonService {
       throw this.handleError(error);
     }
   }
-
+/**
+   * Lấy danh sách tất cả bài học đã publish trong một series
+   * @param {string} seriesId - ID của series
+   * @returns {Promise} - Promise chứa danh sách bài học
+   */
+  async getAllLessonsPublished(seriesId) {
+  try {
+    const response = await this.api.get(`/series/${seriesId}/lessons/published`);
+    return response.data;
+  } catch (error) {
+    throw this.handleError(error);
+  }
+  }
   /**
    * Lấy thông tin chi tiết của một bài học
    * @param {string} seriesId - ID của series

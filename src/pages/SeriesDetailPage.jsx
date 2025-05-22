@@ -62,14 +62,20 @@ const SeriesDetailPage = () => {
                     serie_category: seriesData.serie_category,
                     isPublish: seriesData.isPublish,
                 });
-                // Check if current user is the owner
-                if (user && seriesData.serie_user && user._id === seriesData.series_user) {
-                    setIsOwner(true);
-                }
 
-                // Fetch lessons
-                const lessonsData = await LessonService.getAllLessons(seriesId);
-                setLessons(lessonsData);
+                const isOwner = user && seriesData.serie_user && user.data._id === seriesData.serie_user;
+                setIsOwner(isOwner);
+
+                // Fetch lessons                
+                if (isOwner) {
+                    const lessonsData = await LessonService.getAllLessons(seriesId);
+                    console.log(lessonsData.length)
+                    setLessons(lessonsData);
+                }
+                else {
+                    const lessonsData = await LessonService.getAllLessonsPublished(seriesId);
+                    setLessons(lessonsData.data);
+                }
 
                 setError(null);
             } catch (err) {
@@ -303,22 +309,22 @@ const SeriesDetailPage = () => {
                                     </Button>
                                     <Button
                                         onClick={handleTogglePublish}
-                                        className={`shadow-md transition-all duration-300 transform hover:scale-105 rounded-lg ${series.isPublish
-                                            ? "bg-red-600 hover:bg-red-700 text-white hover:shadow-red-500/30"
-                                            : "bg-green-600 hover:bg-green-700 text-white hover:shadow-green-500/30"
+                                        className={`inline-flex items-center px-4 py-2 font-medium rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ease-in-out text-white ${series.isPublish
+                                            ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:shadow-red-500/30"
+                                            : "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 hover:shadow-green-500/30"
                                             }`}
                                         disabled={isSubmitting}
                                     >
                                         {series.isPublish ? (
                                             <>
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 Hủy xuất bản
                                             </>
                                         ) : (
                                             <>
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 Xuất bản

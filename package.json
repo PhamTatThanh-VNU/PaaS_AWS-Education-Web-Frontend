@@ -13,6 +13,7 @@
     "@aws-sdk/client-dynamodb": "^3.808.0",
     "@aws-sdk/lib-dynamodb": "^3.808.0",
     "@headlessui/react": "^2.2.3",
+    "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.6",
     "aws-amplify": "^6.14.4",
     "axios": "^1.9.0",
