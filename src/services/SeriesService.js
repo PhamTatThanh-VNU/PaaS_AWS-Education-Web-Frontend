@@ -85,7 +85,7 @@ class SeriesService {
    */
   async getUserSeries() {
     try {
-      const response = await this.api.get("/series/user");
+      const response = await this.api.get("/series/created");
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -203,6 +203,34 @@ class SeriesService {
       return response.data;
     } catch (error) {
       throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Đăng ký theo dõi series
+   * @param {string|number} seriesId - ID của series cần đăng ký theo dõi
+   * @returns {Promise} - Promise với kết quả sau khi đăng ký
+   */
+  async subscribeSeries(seriesId) {
+    try {
+      const response = await this.api.post(`/series/${seriesId}/subscribe`);
+      return response.data;
+    } catch (error) {
+      return Promise.reject(this.handleError(error).message);
+    }
+  }
+
+  /**
+   * Hủy đăng ký theo dõi series
+   * @param {string|number} seriesId - ID của series cần hủy đăng ký theo dõi
+   * @returns {Promise} - Promise với kết quả sau khi hủy đăng ký
+   */
+  async unsubscribeSeries(seriesId) {
+    try {
+      const response = await this.api.post(`/series/${seriesId}/unsubscribe`);
+      return response.data;
+    } catch (error) {
+      return Promise.reject(this.handleError(error).message);
     }
   }
 

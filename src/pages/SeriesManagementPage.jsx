@@ -8,6 +8,7 @@ import SeriesFilters from '../components/series/SeriesFilters';
 import EmptyState from '../components/common/EmptyState';
 import Loading from '../components/common/Loading';
 import ErrorAlert from '../components/common/ErrorAlert';
+import ErrorModal from '../components/common/ErrorModal';
 import Button from '../components/common/Button';
 
 /**
@@ -41,6 +42,9 @@ const SeriesManagementPage = () => {
         formErrors,
         isSubmitting,
         isDeleting,
+        isErrorModalOpen,
+        setIsErrorModalOpen,
+        errorMessage,
         handleDeleteSeries,
         handleCreateSeries,
         handleEditSeries,
@@ -160,6 +164,14 @@ const SeriesManagementPage = () => {
                 onConfirm={handleDeleteSeries}
                 series={seriesToDelete}
                 isDeleting={isDeleting}
+            />
+
+            <ErrorModal
+                isOpen={isErrorModalOpen}
+                onClose={() => setIsErrorModalOpen(false)}
+                title="Không thể xóa Series"
+                message={errorMessage}
+                buttonText="Đóng"
             />
         </MainLayout>
     );

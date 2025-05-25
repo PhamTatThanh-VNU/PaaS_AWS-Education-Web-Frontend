@@ -81,7 +81,7 @@ export const getCurrentUserProfile = async () => {
  */
 export const updateUserProfile = async (userId, profileData) => {
   try {
-    const response = await api.put(`/users/profile/${userId}`, profileData);
+    const response = await api.put(`/users/${userId}`, profileData);
     return response.data;
   } catch (error) {
     console.error("Error updating user profile:", error);

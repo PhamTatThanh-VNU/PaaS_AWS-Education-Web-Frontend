@@ -7,6 +7,9 @@ import './App.css'
 import './styles/animations.css'
 import './styles/explore.css'
 
+// ChatBot Component
+import ChatBot from './components/chat/ChatBot'
+
 // Auth Components
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
@@ -113,6 +116,9 @@ function App() {
           {/* Catch-all route for 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+
+        {/* ChatBot Component - Available on all pages */}
+        <ChatBot />
       </Router>
     </AuthProvider>
   )

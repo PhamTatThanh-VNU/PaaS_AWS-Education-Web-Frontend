@@ -14,13 +14,46 @@ const CreateSeriesModal = ({
 }) => {
     const [imagePreview, setImagePreview] = useState(null);
     const [coverImage, setCoverImage] = useState(null);
+    const [customCategory, setCustomCategory] = useState('');
+    const [showCustomInput, setShowCustomInput] = useState(false);
     const fileInputRef = useRef(null);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
+
+        // Handle category selection
+        if (name === 'serie_category') {
+            if (value === 'Khác') {
+                setShowCustomInput(true);
+                setCustomCategory('');
+                // Don't set the category value yet, wait for custom input
+                setFormData({
+                    ...formData,
+                    [name]: '',
+                });
+            } else {
+                setShowCustomInput(false);
+                setCustomCategory('');
+                setFormData({
+                    ...formData,
+                    [name]: value,
+                });
+            }
+        } else {
+            setFormData({
+                ...formData,
+                [name]: type === 'checkbox' ? checked : value,
+            });
+        }
+    };
+
+    const handleCustomCategoryChange = (e) => {
+        const value = e.target.value;
+        setCustomCategory(value);
+        // Update the form data with the custom category value
         setFormData({
             ...formData,
-            [name]: type === 'checkbox' ? checked : value,
+            serie_category: value,
         });
     };
 
@@ -172,7 +205,7 @@ const CreateSeriesModal = ({
                                 <select
                                     name="serie_category"
                                     id="serie_category"
-                                    value={formData.serie_category}
+                                    value={showCustomInput ? "Khác" : formData.serie_category}
                                     onChange={handleInputChange}
                                     className={`mt-1 block w-full px-3 py-2 border ${formErrors.serie_category ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
                                 >
@@ -184,24 +217,29 @@ const CreateSeriesModal = ({
                                     <option value="Kỹ năng mềm">Kỹ năng mềm</option>
                                     <option value="Khác">Khác</option>
                                 </select>
+
+                                {/* Custom Category Input - shown when "Khác" is selected */}
+                                {showCustomInput && (
+                                    <div className="mt-3">
+                                        <label htmlFor="custom_category" className="block text-sm font-medium text-gray-700">
+                                            Nhập danh mục mới <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="custom_category"
+                                            id="custom_category"
+                                            value={customCategory}
+                                            onChange={handleCustomCategoryChange}
+                                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            placeholder="Ví dụ: Khoa học, Toán học, Nghệ thuật..."
+                                            autoFocus
+                                        />
+                                    </div>
+                                )}
+
                                 {formErrors.serie_category && (
                                     <p className="mt-1 text-sm text-red-600">{formErrors.serie_category}</p>
                                 )}
-                            </div>
-
-                            {/* Published Status */}
-                            <div className="flex items-center">
-                                <input
-                                    id="isPublished"
-                                    name="isPublished"
-                                    type="checkbox"
-                                    checked={formData.isPublished}
-                                    onChange={handleInputChange}
-                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                />
-                                <label htmlFor="isPublished" className="ml-2 block text-sm text-gray-700">
-                                    Xuất bản ngay
-                                </label>
                             </div>
                         </div>
                     </div>

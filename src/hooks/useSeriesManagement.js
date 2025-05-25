@@ -18,18 +18,18 @@ const useSeriesManagement = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [newSeries, setNewSeries] = useState({
         serie_title: '',
         serie_description: '',
         serie_category: '',
-        isPublish: false,
     });
     const [seriesToEdit, setSeriesToEdit] = useState(null);
     const [editFormData, setEditFormData] = useState({
         serie_title: '',
         serie_description: '',
         serie_category: '',
-        isPublish: false,
     });
     const [formErrors, setFormErrors] = useState({});
 
@@ -69,11 +69,18 @@ const useSeriesManagement = () => {
         try {
             setIsDeleting(true);
             await seriesService.deleteSeries(seriesToDelete._id);
+            
+            // Chỉ xóa khỏi danh sách khi xóa thành công
             setSeries(series.filter(item => item._id !== seriesToDelete._id));
             setIsDeleteModalOpen(false);
             setSeriesToDelete(null);
+            setError(null); // Xóa lỗi khi thành công
         } catch (err) {
-            setError('Không thể xóa series. Vui lòng thử lại sau.');
+            // Lấy message lỗi từ backend và hiển thị trong error modal
+            const errorMessage = err.message || 'Không thể xóa series. Vui lòng thử lại sau.';
+            setErrorMessage(errorMessage);
+            setIsErrorModalOpen(true);
+            setIsDeleteModalOpen(false); // Đóng modal xác nhận xóa
             console.error('Error deleting series:', err);
         } finally {
             setIsDeleting(false);
@@ -256,6 +263,10 @@ const useSeriesManagement = () => {
         setFormErrors,
         isSubmitting,
         isDeleting,
+        isErrorModalOpen,
+        setIsErrorModalOpen,
+        errorMessage,
+        setErrorMessage,
         handleDeleteSeries,
         handleCreateSeries,
         handleEditSeries,

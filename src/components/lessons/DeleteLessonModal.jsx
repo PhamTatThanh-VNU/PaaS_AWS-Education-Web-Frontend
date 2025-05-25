@@ -39,7 +39,7 @@ const DeleteLessonModal = ({ isOpen, onClose, onConfirm, lesson }) => {
                     </h3>
 
                     <p className="text-sm text-gray-600 mb-6 text-center">
-                        Bạn có chắc chắn muốn xóa bài học <span className="font-semibold">"{lesson.title}"</span>?
+                        Bạn có chắc chắn muốn xóa bài học <span className="font-semibold">"{lesson.lesson_title}"</span>?
                         Hành động này không thể hoàn tác và tất cả nội dung bài học sẽ bị xóa vĩnh viễn.
                     </p>
 

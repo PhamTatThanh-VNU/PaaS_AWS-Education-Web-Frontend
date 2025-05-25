@@ -5,6 +5,7 @@ import {
     updatePassword,
     resendSignUpCode as amplifyResendSignUpCode
 } from 'aws-amplify/auth';
+import { Hub } from 'aws-amplify/utils';
 import { createUserProfile, getCurrentUserProfile } from '../services/UserService';
 
 // Create Authentication Context
@@ -26,13 +27,27 @@ export const AuthProvider = ({ children }) => {
                 setUser(userData);
             } catch (err) {
                 setUser(null);
-                throw Error(err);
             } finally {
                 setLoading(false);
             }
         };
 
         checkAuthState();
+    }, []);
+
+    // Listen for auth events (token expiration, etc.)
+    useEffect(() => {
+        const unsubscribe = Hub.listen('auth', ({ payload }) => {
+            switch (payload.event) {
+                case 'tokenRefresh_failure':
+                case 'signOut':
+                    setUser(null);
+                    localStorage.clear();
+                    break;
+            }
+        });
+
+        return unsubscribe;
     }, []);
 
     // Sign in function

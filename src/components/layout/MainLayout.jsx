@@ -1,5 +1,6 @@
 import Header from './Header';
 import Footer from './Footer';
+import ChatBot from '../chat/ChatBot';
 
 const MainLayout = ({ children, fullWidth = false }) => {
     return (
@@ -9,6 +10,7 @@ const MainLayout = ({ children, fullWidth = false }) => {
                 {children}
             </main>
             <Footer />
+            <ChatBot />
         </div>
     );
 };

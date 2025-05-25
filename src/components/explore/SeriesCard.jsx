@@ -7,7 +7,7 @@ const SeriesCard = ({ series }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     // Helper function to create placeholder image URL with series title
-    const getPlaceholderImage = (title) => {        
+    const getPlaceholderImage = (title) => {
         const encodedTitle = encodeURIComponent(title || 'Course');
         return `https://ui-avatars.com/api/?name=${encodedTitle}&background=0D8ABC&color=fff&size=600`;
     };
@@ -16,21 +16,6 @@ const SeriesCard = ({ series }) => {
     const formatRating = (rating) => {
         if (!rating && rating !== 0) return 'N/A';
         return Number.isInteger(rating) ? rating : rating.toFixed(1);
-    };
-
-    // Get course difficulty label with appropriate color
-    const getDifficultyLabel = () => {
-        const difficulty = series.difficulty || 'Beginner';
-
-        const difficultyMap = {
-            'Beginner': { label: 'Cơ bản', class: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800' },
-            'Intermediate': { label: 'Trung cấp', class: 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800' },
-            'Advanced': { label: 'Nâng cao', class: 'bg-gradient-to-r from-red-100 to-red-200 text-red-800' },
-            'All Levels': { label: 'Tất cả', class: 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800' },
-        };
-
-        const defaultDifficulty = { label: 'Cơ bản', class: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800' };
-        return difficultyMap[difficulty] || defaultDifficulty;
     };
 
     // Generate the category badge
@@ -91,8 +76,8 @@ const SeriesCard = ({ series }) => {
                 {/* Meta information */}
                 <div className="flex flex-wrap gap-2 mb-3">
                     {/* Difficulty */}
-                    <span className={`px-3 py-1 text-xs rounded-full ${getDifficultyLabel().class} font-medium shadow-sm`}>
-                        {getDifficultyLabel().label}
+                    <span className={`px-3 py-1 text-xs rounded-full bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 font-medium shadow-sm`}>
+                        {series.serie_category}
                     </span>
 
                     {/* Rating if available */}
