@@ -41,8 +41,8 @@ const Header = () => {
                             <Link to="/" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">Home</Link>
                             <Link to="/dashboard" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">Dashboard</Link>
                             <Link to="/explore" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">Explore</Link>
-                            {isAuthenticated && (
-                                <Link to="/series" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">My Courses</Link>
+                            {isAuthenticated && (                                
+                                <Link to="/series" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">My Courses</Link>                                                                
                             )}
                         </nav>
 
@@ -56,6 +56,7 @@ const Header = () => {
                                         </svg>
                                     </button>
                                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right">
+                                        <Link to="/subscribe" className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">Followed</Link>
                                         <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">Profile</Link>
                                         <Link to="/change-password" className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">Change Password</Link>
                                         <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">

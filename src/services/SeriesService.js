@@ -236,6 +236,19 @@ class SeriesService {
   }
 
   /**
+   * Lấy danh sách tất cả series mà user hiện tại đã đăng ký theo dõi
+   * @returns {Promise} - Promise với danh sách series đã đăng ký
+   */
+  async getAllSeriesSubscribe() {
+    try {
+      const response = await this.api.get("/series/subscribed");
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Xử lý lỗi từ API
    * @param {Error} error - Đối tượng lỗi
    * @returns {Error} - Error với thông tin chi tiết

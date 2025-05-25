@@ -27,6 +27,7 @@ import SeriesManagementPage from './pages/SeriesManagementPage'
 import SeriesDetailPage from './pages/SeriesDetailPage'
 import InstructorProfile from './pages/InstructorProfile'
 import LessonDetailPage from './components/lessons/LessonPage'
+import SubscribedSeriesPage from './pages/SubscribeSeriesPage'
 
 // Initialize AWS Amplify with v6 configuration
 Amplify.configure(awsConfig);
@@ -125,7 +126,8 @@ function App() {
               <LessonDetailPage />
             </ProtectedRoute>
           } />
-
+          {/* Subscribe Series Routes */}
+          <Route path="/subscribe" element={<SubscribedSeriesPage />} />
           {/* Catch-all route for 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
