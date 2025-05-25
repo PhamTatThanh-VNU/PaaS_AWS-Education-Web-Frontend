@@ -1,0 +1,187 @@
+name: CI/CD Pipeline - Build and Deploy Frontend
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+  FRONTEND_ECR_REPOSITORY: ${{ vars.FRONTEND_ECR_REPOSITORY }}
+
+# Permission can be added at job level or workflow level
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+  security-events: write  # This is required for uploading SARIF results
+
+jobs:
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+
+    - name: Install dependencies
+      working-directory: ./
+      run: |
+        echo "📦 Installing dependencies..."
+        npm ci
+        echo "✅ Dependencies installed successfully!"
+
+    - name: Build application
+      working-directory: ./
+      env:
+        VITE_AWS_REGION: ${{ vars.AWS_REGION }}
+        VITE_AWS_USER_POOL_ID: ${{ secrets.VITE_AWS_USER_POOL_ID }}
+        VITE_AWS_USER_POOL_CLIENT_ID: ${{ secrets.VITE_AWS_USER_POOL_CLIENT_ID }}
+        VITE_GOOGLE_GEMINI_API_KEY: ${{ secrets.VITE_GOOGLE_GEMINI_API_KEY }}
+        VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
+      run: |
+        echo "🏗️  Building application..."
+        npm run build
+        echo "✅ Application built successfully!"
+        echo "📊 Build output:"
+        ls -la dist/
+
+    - name: Configure AWS credentials using OIDC
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-session-name: GitHubActions-CI-CD
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Verify ECR repository exists
+      run: |
+        echo "Checking if Frontend ECR repository exists..."
+        aws ecr describe-repositories --repository-names ${{ env.FRONTEND_ECR_REPOSITORY }} || { echo "Frontend repository not found!"; exit 1; }
+        echo "✅ Frontend ECR repository exists and is accessible"
+
+    - name: Build and push Frontend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./
+        file: ./Dockerfile
+        push: true
+        tags: |
+          ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:latest
+          ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Image scan with Trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:${{ github.sha }}
+        format: 'sarif'
+        output: '${{ github.workspace }}/trivy-results.sarif'
+      continue-on-error: true
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always() && github.event_name != 'pull_request' && steps.trivy-scan.outcome == 'success'
+      with:
+        sarif_file: '${{ github.workspace }}/trivy-results.sarif'
+      continue-on-error: true
+
+    - name: Display build information
+      run: |
+        echo "🐳 Frontend Image: ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:${{ github.sha }}"
+        echo "✅ Frontend image successfully built and pushed to ECR!"
+        echo "📊 Build completed with environment variables:"
+        echo "   - AWS Region: ${{ env.VITE_AWS_REGION }}"
+
+  deploy-frontend:
+    needs: build-and-push-frontend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials using OIDC
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-session-name: GitHubActions-Deploy
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Deploy Frontend to ECS
+      run: |
+        echo "🚀 Deploying Frontend to ECS..."
+        
+        # Get current task definition
+        echo "📋 Getting current frontend task definition..."
+        aws ecs describe-task-definition \
+          --task-definition ${{ vars.ECS_FRONTEND_TASK_DEFINITION_NAME }} \
+          --query 'taskDefinition' --output json > task-def-frontend.json
+        
+        # Update the image URI in task definition and clean up unnecessary fields
+        echo "🔄 Updating image URI for frontend..."
+        jq --arg IMAGE "${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:${{ github.sha }}" \
+          '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .placementConstraints, .compatibilities, .registeredAt, .registeredBy)' \
+          task-def-frontend.json > new-task-def-frontend.json
+        
+        # Validate JSON
+        echo "🔍 Validating generated frontend JSON..."
+        if ! jq empty new-task-def-frontend.json; then
+          echo "❌ Invalid JSON generated for frontend:"
+          cat new-task-def-frontend.json
+          exit 1
+        fi
+        echo "Generated frontend JSON content:"
+        cat new-task-def-frontend.json
+        
+        # Register new task definition
+        echo "📝 Registering new frontend task definition..."
+        NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+          --cli-input-json file://new-task-def-frontend.json \
+          --query 'taskDefinition.taskDefinitionArn' --output text)
+        
+        echo "✅ New frontend task definition registered: $NEW_TASK_DEF_ARN"
+        
+        # Clean up temporary files
+        rm -f task-def-frontend.json new-task-def-frontend.json
+        
+        # Update ECS service to use new task definition
+        echo "🔄 Updating ECS frontend service..."
+        aws ecs update-service \
+          --cluster ${{ vars.ECS_CLUSTER_NAME }} \
+          --service ${{ vars.ECS_FRONTEND_SERVICE_NAME }} \
+          --task-definition $NEW_TASK_DEF_ARN
+
+    - name: Wait for deployment to complete
+      run: |
+        echo "⏳ Waiting for Frontend deployment to stabilize..."
+        # Wait for frontend service to stabilize
+        aws ecs wait services-stable \
+          --cluster ${{ vars.ECS_CLUSTER_NAME }} \
+          --services ${{ vars.ECS_FRONTEND_SERVICE_NAME }}
+
+    - name: Deployment notification
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Frontend deployment successful!"
+          echo "🌐 Frontend is now available and running the latest version"
+        else
+          echo "❌ Frontend deployment failed!"
+        fi 
