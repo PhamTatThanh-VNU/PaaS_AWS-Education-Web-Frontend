@@ -88,3 +88,18 @@ export const updateUserProfile = async (userId, profileData) => {
     throw error;
   }
 };
+
+/**
+ * Fetches user profile by user ID
+ * @param {string} userId - User ID to fetch profile for
+ * @returns {Promise} - Promise with the user profile data
+ */
+export const getUserById = async (userId) => {
+  try {
+    const response = await api.get(`/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    throw error;
+  }
+};

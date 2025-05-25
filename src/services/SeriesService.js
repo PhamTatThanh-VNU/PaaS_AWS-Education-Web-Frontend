@@ -216,7 +216,7 @@ class SeriesService {
       const response = await this.api.post(`/series/${seriesId}/subscribe`);
       return response.data;
     } catch (error) {
-      return Promise.reject(this.handleError(error).message);
+      return Promise.reject(error);
     }
   }
 
@@ -230,7 +230,8 @@ class SeriesService {
       const response = await this.api.post(`/series/${seriesId}/unsubscribe`);
       return response.data;
     } catch (error) {
-      return Promise.reject(this.handleError(error).message);
+      const message = error?.response?.data?.result?.message
+      return Promise.reject(message);
     }
   }
 

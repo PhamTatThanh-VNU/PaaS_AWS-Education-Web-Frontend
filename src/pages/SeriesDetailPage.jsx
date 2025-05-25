@@ -1,9 +1,10 @@
 import { useState, useEffect, useContext } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import MainLayout from '../components/layout/MainLayout';
 import SeriesService from '../services/SeriesService';
 import LessonService from '../services/LessonService';
+import { getUserById } from '../services/UserService';
 import Loading from '../components/common/Loading';
 import ErrorAlert from '../components/common/ErrorAlert';
 import Button from '../components/common/Button';
@@ -18,6 +19,7 @@ import ErrorModal from '../components/common/ErrorModal';
 const SeriesDetailPage = () => {
     const { seriesId } = useParams();
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const [state, setState] = useState({
         series: null, lessons: [], loading: true, error: null,
@@ -41,20 +43,39 @@ const SeriesDetailPage = () => {
             try {
                 setState(prev => ({ ...prev, loading: true }));
 
-                // Fetch series data, lessons, and check if user is subscribed
                 const [seriesData, lessonsData] = await Promise.all([
                     SeriesService.getSeriesById(seriesId),
                     LessonService.getAllLessons(seriesId)
                 ]);
+
+                let ownerInfo = null;
+                if (seriesData.serie_user) {
+                    try {
+                        const ownerData = await getUserById(seriesData.serie_user);
+                        ownerInfo = ownerData.data || ownerData; // Xử lý cả trường hợp response có wrap data hoặc không
+                    } catch (error) {
+                        console.warn('Could not fetch owner info:', error);
+                        // Nếu không lấy được thông tin owner, sử dụng thông tin mặc định
+                        ownerInfo = {
+                            _id: seriesData.serie_user,
+                            name: 'Người dùng',
+                            email: 'Không có thông tin'
+                        };
+                    }
+                }
 
                 // Check if current user is subscribed to this series
                 let isSubscribed = false;
                 if (user && user.data.serie_subcribe) {
                     isSubscribed = user.data.serie_subcribe.includes(seriesId);
                 }
+
                 setState(prev => ({
                     ...prev,
-                    series: seriesData,
+                    series: {
+                        ...seriesData,
+                        owner: ownerInfo // Gán thông tin owner vào series
+                    },
                     lessons: lessonsData,
                     loading: false,
                     error: null,
@@ -147,14 +168,12 @@ const SeriesDetailPage = () => {
             setState(prev => ({ ...prev, isSubmitting: true }));
             try {
                 // Call API to subscribe
-                const result = await SeriesService.subscribeSeries(seriesId);
+                await SeriesService.subscribeSeries(seriesId);
 
                 // Update local state to reflect subscription
                 setState(prev => ({ ...prev, isSubmitting: false, isSubscribed: true }));
                 setModals(prev => ({ ...prev, subscribeSuccess: true }));
 
-                // You might want to refresh user context if needed
-                // This depends on your app architecture
             } catch (error) {
                 setState(prev => ({ ...prev, isSubmitting: false }));
                 setModals(prev => ({ ...prev, subscribeError: error.message || 'Lỗi khi đăng ký theo dõi' }));
@@ -172,9 +191,8 @@ const SeriesDetailPage = () => {
                 setModals(prev => ({
                     ...prev,
                     unsubscribeConfirm: false,
-                    subscribeError: error.message || 'Lỗi khi hủy đăng ký theo dõi'
+                    subscribeError: error || 'Lỗi khi hủy đăng ký theo dõi'
                 }));
-                console.log(error);
             }
         }
     };
@@ -231,14 +249,89 @@ const SeriesDetailPage = () => {
                             )}
 
                             {series.owner && (
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center font-bold">
-                                        {series.owner.name?.charAt(0).toUpperCase() || 'U'}
+                                <div
+                                    className="group relative cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                                    onClick={() => navigate(`/instructor/${series.owner._id}/from-series/${seriesId}`)}
+                                >
+                                    {/* Background Layer with Better Contrast */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/70 to-black/60 backdrop-blur-sm rounded-2xl opacity-80 group-hover:opacity-95 transition-all duration-300"></div>
+
+                                    {/* Subtle Border Glow */}
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
+                                    <div className="absolute inset-0 rounded-2xl border border-white/20 group-hover:border-white/40 transition-colors duration-300"></div>
+
+                                    {/* Content Container */}
+                                    <div className="relative flex items-center gap-4 p-4 rounded-2xl">
+                                        {/* Enhanced Avatar with Better Visibility */}
+                                        <div className="relative flex-shrink-0">
+                                            {/* Main Avatar */}
+                                            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-full flex items-center justify-center font-bold text-xl text-white shadow-2xl border-3 border-white/90 group-hover:scale-110 group-hover:border-white transition-all duration-300 relative overflow-hidden">
+                                                <span className="relative z-10">{series.owner.name?.charAt(0).toUpperCase() || 'U'}</span>
+                                                {/* Inner Glow */}
+                                                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                            </div>
+
+                                            {/* Verified Badge with High Contrast */}
+                                            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full border-3 border-white flex items-center justify-center shadow-xl">
+                                                <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            </div>
+
+                                            {/* Animated Ring */}
+                                            <div className="absolute inset-0 rounded-full border-2 border-blue-400/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-ping"></div>
+                                        </div>
+
+                                        {/* Text Content with High Contrast */}
+                                        <div className="flex-1 min-w-0">
+                                            {/* Title with Icon */}
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full border border-white/20">
+                                                    <div className="w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                                                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z" />
+                                                        </svg>
+                                                    </div>
+                                                    <span className="text-sm font-semibold text-white">Giảng viên</span>
+                                                </div>
+
+                                                {/* View Profile Icon */}
+                                                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1">
+                                                    <svg className="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+
+                                            {/* Instructor Name with Shadow for Readability */}
+                                            <h4 className="text-lg font-bold text-white group-hover:text-blue-100 transition-colors duration-300 mb-1" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                                                {series.owner.name || series.owner.email}
+                                            </h4>
+
+                                            {/* Call to Action */}
+                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                                <div className="flex items-center gap-1 bg-blue-500/20 backdrop-blur-sm px-2 py-1 rounded-full border border-blue-400/30">
+                                                    <svg className="w-3 h-3 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    <span className="text-xs font-medium text-blue-200">Nhấn để xem hồ sơ</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Enhanced Arrow with Better Visibility */}
+                                        <div className="flex-shrink-0 opacity-70 group-hover:opacity-100 transition-all duration-300">
+                                            <div className="w-10 h-10 bg-white/15 backdrop-blur-sm group-hover:bg-white/25 rounded-xl border border-white/20 group-hover:border-white/40 flex items-center justify-center transition-all duration-300 shadow-lg">
+                                                <svg className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-medium">Giảng viên</p>
-                                        <p className="text-sm opacity-80">{series.owner.name || series.owner.email}</p>
-                                    </div>
+
+                                    {/* Subtle Shine Effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 rounded-2xl"></div>
                                 </div>
                             )}
                         </div>
@@ -264,21 +357,66 @@ const SeriesDetailPage = () => {
                                 {isSubscribed ? (
                                     <Button
                                         onClick={() => setModals(prev => ({ ...prev, unsubscribeConfirm: true }))}
-                                        className="bg-rose-500 hover:bg-rose-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                                        className="relative group bg-gradient-to-r from-slate-600 via-gray-700 to-slate-800 hover:from-slate-700 hover:via-gray-800 hover:to-slate-900 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 flex items-center gap-3 border border-slate-400/20 backdrop-blur-sm overflow-hidden"
                                         disabled={isSubmitting}
                                     >
-                                        <span className="animate-pulse">❤️</span> Đang theo dõi
+                                        {/* Subtle shimmer effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+
+                                        {/* Check icon with subtle animation */}
+                                        <div className="relative flex items-center justify-center w-8 h-8 bg-white/10 rounded-full">
+                                            <svg className="w-4 h-4 text-green-400 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            <div className="absolute inset-0 bg-green-400/10 rounded-full animate-pulse opacity-50"></div>
+                                        </div>
+
+                                        <div className="relative flex flex-col items-start">
+                                            <span className="text-sm font-semibold tracking-wide">Đang theo dõi</span>
+                                            <span className="text-xs opacity-70 font-medium">Nhấn để hủy</span>
+                                        </div>
+
+                                        {/* Minimal accent dots */}
+                                        <div className="absolute top-2 right-3 w-1.5 h-1.5 bg-green-400/40 rounded-full animate-pulse"></div>
+                                        <div className="absolute bottom-2 left-6 w-1 h-1 bg-slate-400/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
                                     </Button>
                                 ) : (
                                     <Button
                                         onClick={handlers.subscribe}
-                                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+                                        className="relative group bg-gradient-to-r from-slate-800 via-gray-900 to-black hover:from-slate-900 hover:via-black hover:to-slate-800 text-white px-10 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-110 flex items-center gap-4 border border-slate-600/30 backdrop-blur-sm overflow-hidden"
                                         disabled={isSubmitting}
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                                        </svg>
-                                        Theo dõi
+                                        {/* Subtle glow effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-slate-600/10 via-gray-600/10 to-slate-600/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                                        {/* Clean shimmer effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/8 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+
+                                        {/* Plus icon with clean animation */}
+                                        <div className="relative flex items-center justify-center w-10 h-10 bg-white/8 rounded-full group-hover:bg-white/12 transition-all duration-500">
+                                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                                            </svg>
+
+                                            {/* Subtle ring animation */}
+                                            <div className="absolute inset-0 border border-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        </div>
+
+                                        <div className="relative flex flex-col items-start">
+                                            <span className="text-lg font-bold tracking-wide group-hover:text-slate-200 transition-colors duration-300">Theo dõi</span>
+                                            <span className="text-xs opacity-70 group-hover:opacity-90 transition-opacity duration-300 font-medium">Nhận thông báo mới</span>
+                                        </div>
+
+                                        {/* Minimal accent elements */}
+                                        <div className="absolute top-3 right-4 w-1.5 h-1.5 bg-slate-400/40 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
+                                        <div className="absolute bottom-3 right-7 w-1 h-1 bg-gray-500/30 rounded-full animate-pulse" style={{ animationDelay: '0.8s' }}></div>
+
+                                        {/* Success indicator */}
+                                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-600 rounded-full flex items-center justify-center opacity-0 group-active:opacity-100 transition-opacity duration-200 transform scale-0 group-active:scale-100">
+                                            <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
                                     </Button>
                                 )}
                             </div>
@@ -413,22 +551,6 @@ const SeriesDetailPage = () => {
                                 ))}
                             </div>
                         </div>
-
-                        {/* Instructor Card */}
-                        {series.owner && (
-                            <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/30">
-                                <h3 className="text-lg font-bold mb-6 text-gray-800">👨‍🏫 Giảng viên</h3>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                        {series.owner.name?.charAt(0).toUpperCase() || 'U'}
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="font-semibold text-gray-900">{series.owner.name || 'Người dùng'}</p>
-                                        <p className="text-sm text-gray-600">{series.owner.email}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
@@ -483,7 +605,7 @@ const SeriesDetailPage = () => {
                 isOpen={modals.subscribeSuccess}
                 onClose={() => setModals(prev => ({ ...prev, subscribeSuccess: false }))}
                 title="Đăng ký theo dõi thành công!"
-                message="Cảm ơn bạn đã đăng ký theo dõi khóa học này. Bạn sẽ nhận được thông báo qua email mỗi khi có cập nhật mới."
+                message="Cảm ơn bạn đã đăng ký theo dõi khóa học này. Để có thể nhận được thông báo qua email mỗi khi có cập nhật mới, bạn cần phải xác nhận trong email của mình. Chúng tôi đã gửi email cho bạn, hãy tìm cả trong mục Spam nếu không thấy trong hộp thư đến."
                 buttonText="Đã hiểu"
             />
 

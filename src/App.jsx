@@ -25,6 +25,7 @@ import ProfilePage from './pages/ProfilePage'
 import ExplorePage from './pages/ExplorePage'
 import SeriesManagementPage from './pages/SeriesManagementPage'
 import SeriesDetailPage from './pages/SeriesDetailPage'
+import InstructorProfile from './pages/InstructorProfile'
 import LessonDetailPage from './components/lessons/LessonPage'
 
 // Initialize AWS Amplify with v6 configuration
@@ -103,6 +104,18 @@ function App() {
           <Route path="/series/:seriesId" element={
             <ProtectedRoute>
               <SeriesDetailPage />
+            </ProtectedRoute>
+          } />
+
+          {/* Instructor Profile Routes */}
+          <Route path="/instructor/:instructorId" element={
+            <ProtectedRoute>
+              <InstructorProfile />
+            </ProtectedRoute>
+          } />
+          <Route path="/instructor/:instructorId/from-series/:seriesId" element={
+            <ProtectedRoute>
+              <InstructorProfile />
             </ProtectedRoute>
           } />
 
