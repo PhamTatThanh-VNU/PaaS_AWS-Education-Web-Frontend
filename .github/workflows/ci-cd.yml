@@ -82,14 +82,13 @@ jobs:
         push: true
         tags: |
           ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:latest
-          ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
     - name: Image scan with Trivy
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:${{ github.sha }}
+        image-ref: ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:latest
         format: 'sarif'
         output: '${{ github.workspace }}/trivy-results.sarif'
       continue-on-error: true
@@ -103,7 +102,7 @@ jobs:
 
     - name: Display build information
       run: |
-        echo "🐳 Frontend Image: ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:${{ github.sha }}"
+        echo "🐳 Frontend Image: ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:latest"
         echo "✅ Frontend image successfully built and pushed to ECR!"
         echo "📊 Build completed with environment variables:"
         echo "   - AWS Region: ${{ env.VITE_AWS_REGION }}"
@@ -136,7 +135,7 @@ jobs:
         
         # Update the image URI in task definition and clean up unnecessary fields
         echo "🔄 Updating image URI for frontend..."
-        jq --arg IMAGE "${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:${{ github.sha }}" \
+        jq --arg IMAGE "${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_ECR_REPOSITORY }}:latest" \
           '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .placementConstraints, .compatibilities, .registeredAt, .registeredBy)' \
           task-def-frontend.json > new-task-def-frontend.json
         
