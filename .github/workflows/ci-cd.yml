@@ -55,11 +55,10 @@ jobs:
         ls -la dist/
 
     - name: Configure AWS credentials using OIDC
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@b475783
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         role-session-name: GitHubActions-CI-CD
-        aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -117,11 +116,10 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Configure AWS credentials using OIDC
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@b475783
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         role-session-name: GitHubActions-Deploy
-        aws-region: ${{ env.AWS_REGION }}
 
     - name: Deploy Frontend to ECS
       run: |
