@@ -5,6 +5,7 @@ import Loading from '../components/common/Loading';
 import EmptyState from '../components/common/EmptyState';
 import ErrorAlert from '../components/common/ErrorAlert';
 import seriesService from '../services/SeriesService';
+import '../styles/SubscribeSeriesPage.css';
 
 const SubscribedSeriesPage = () => {
     const [subscribedSeries, setSubscribedSeries] = useState([]);
@@ -20,9 +21,14 @@ const SubscribedSeriesPage = () => {
             setLoading(true);
             setError(null);
             const response = await seriesService.getAllSeriesSubscribe();
-            setSubscribedSeries(response.data || response || []);
+
+            // Đảm bảo subscribedSeries luôn là một mảng
+            const data = response?.data || response || [];
+            setSubscribedSeries(Array.isArray(data) ? data : []);
         } catch (err) {
             setError(err.message || 'Không thể tải danh sách series đã đăng ký');
+            // Đặt về mảng rỗng khi có lỗi
+            setSubscribedSeries([]);
         } finally {
             setLoading(false);
         }
@@ -82,7 +88,7 @@ const SubscribedSeriesPage = () => {
                                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>{subscribedSeries.length} khóa học đã đăng ký</span>
+                                <span>{Array.isArray(subscribedSeries) ? subscribedSeries.length : 0} khóa học đã đăng ký</span>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -112,7 +118,7 @@ const SubscribedSeriesPage = () => {
                     </div>
                 )}
 
-                {!error && subscribedSeries.length === 0 ? (
+                {!error && (!Array.isArray(subscribedSeries) || subscribedSeries.length === 0) ? (
                     <EmptyState
                         icon={
                             <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mb-6">
@@ -135,7 +141,7 @@ const SubscribedSeriesPage = () => {
                                     Danh sách theo dõi của bạn
                                 </h2>
                                 <span className="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">
-                                    {subscribedSeries.length} khóa học
+                                    {Array.isArray(subscribedSeries) ? subscribedSeries.length : 0} khóa học
                                 </span>
                             </div>
 
@@ -152,7 +158,7 @@ const SubscribedSeriesPage = () => {
 
                         {/* Series Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                            {subscribedSeries.map((series, index) => (
+                            {Array.isArray(subscribedSeries) && subscribedSeries.map((series, index) => (
                                 <div
                                     key={series._id || series.id}
                                     className="animate-fade-in-up"
@@ -167,25 +173,6 @@ const SubscribedSeriesPage = () => {
                     </>
                 )}
             </div>
-
-            {/* Custom Styles */}
-            <style jsx>{`
-                @keyframes fade-in-up {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                
-                .animate-fade-in-up {
-                    animation: fade-in-up 0.6s ease-out forwards;
-                    opacity: 0;
-                }
-            `}</style>
         </MainLayout>
     );
 };

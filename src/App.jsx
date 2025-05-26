@@ -127,7 +127,11 @@ function App() {
             </ProtectedRoute>
           } />
           {/* Subscribe Series Routes */}
-          <Route path="/subscribe" element={<SubscribedSeriesPage />} />
+          <Route path="/subscribe" element={
+            <ProtectedRoute>
+              <SubscribedSeriesPage />
+            </ProtectedRoute>}
+          />
           {/* Catch-all route for 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
