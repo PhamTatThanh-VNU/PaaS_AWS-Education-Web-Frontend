@@ -64,6 +64,10 @@ export const createUserProfile = async (profileData) => {
  */
 export const getCurrentUserProfile = async () => {
   try {
+    const { tokens } = await fetchAuthSession();
+    if (!tokens?.idToken) {
+      throw new Error('User not authenticated');
+    }
     const response = await api.get(`/users/profile`);
     return response.data;
   } catch (error) {
