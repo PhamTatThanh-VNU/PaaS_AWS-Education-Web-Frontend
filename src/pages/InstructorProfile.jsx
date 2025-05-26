@@ -160,17 +160,148 @@ const InstructorProfile = () => {
                                             {instructor.name || 'Người dùng'}
                                         </h1>
 
-                                        {/* Better Email Display */}
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
-                                                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                                                </svg>
+                                        {/* Bio Display */}
+                                        {instructor.bio && (
+                                            <div className="flex items-start gap-3 mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
+                                                <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
+                                                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                    </svg>
+                                                </div>
+                                                <p className="text-lg text-blue-800 font-medium italic leading-relaxed">
+                                                    "{instructor.bio}"
+                                                </p>
                                             </div>
-                                            <p className="text-lg text-gray-700 font-medium">
-                                                {instructor.email}
-                                            </p>
+                                        )}
+
+                                        {/* Contact Information Grid */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                                            {/* Email */}
+                                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-gray-500 font-medium">Email</p>
+                                                    <p className="text-gray-800 font-medium">
+                                                        {instructor.email}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Phone */}
+                                            {instructor.phoneNumber && (
+                                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                                                    <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
+                                                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm text-gray-500 font-medium">Điện thoại</p>
+                                                        <p className="text-gray-800 font-medium">
+                                                            {instructor.phoneNumber}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
+
+                                        {/* Personal Information */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+                                            {/* Gender */}
+                                            {instructor.gender && (
+                                                <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl border border-purple-200">
+                                                    <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                        <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm text-purple-600 font-medium">Giới tính</p>
+                                                        <p className="text-purple-800 font-medium">
+                                                            {instructor.gender === 'male' ? 'Nam' : instructor.gender === 'female' ? 'Nữ' : instructor.gender}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Birthdate */}
+                                            {instructor.birthdate && (
+                                                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
+                                                    <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm text-blue-600 font-medium">Ngày sinh</p>
+                                                        <p className="text-blue-800 font-medium">
+                                                            {new Date(instructor.birthdate).toLocaleDateString('vi-VN')}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Country */}
+                                            {instructor.country && (
+                                                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
+                                                    <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
+                                                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm text-green-600 font-medium">Quốc gia</p>
+                                                        <p className="text-green-800 font-medium">
+                                                            {instructor.country}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Address */}
+                                        {instructor.address && (
+                                            <div className="flex items-start gap-3 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
+                                                <div className="w-6 h-6 bg-indigo-100 rounded-lg flex items-center justify-center mt-0.5">
+                                                    <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-indigo-600 font-medium mb-1">Địa chỉ</p>
+                                                    <p className="text-indigo-800 font-medium leading-relaxed">
+                                                        {instructor.address}
+                                                        {instructor.city && `, ${instructor.city}`}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Join Date */}
+                                        {instructor.createdAt && (
+                                            <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl border border-yellow-200 mt-4">
+                                                <div className="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                    <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-yellow-600 font-medium">Tham gia từ</p>
+                                                    <p className="text-yellow-800 font-medium">
+                                                        {new Date(instructor.createdAt.$date || instructor.createdAt).toLocaleDateString('vi-VN', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Enhanced Badges with Better Visibility */}
@@ -190,11 +321,11 @@ const InstructorProfile = () => {
                     </div>
 
                     {/* Enhanced Statistics Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                         {[
                             {
                                 title: 'Khóa học',
-                                value: series.length,
+                                value: Array.isArray(series) ? series.length : 0,
                                 icon: '📚',
                                 color: 'blue',
                                 description: 'Tổng số khóa học đã tạo',
@@ -202,7 +333,7 @@ const InstructorProfile = () => {
                             },
                             {
                                 title: 'Học viên',
-                                value: series.reduce((total, s) => total + (s.studentsCount || 0), 0),
+                                value: Array.isArray(series) ? series.reduce((total, s) => total + (s.studentsCount || 0), 0) : 0,
                                 icon: '👥',
                                 color: 'green',
                                 description: 'Tổng số học viên đã theo dõi',
@@ -210,11 +341,19 @@ const InstructorProfile = () => {
                             },
                             {
                                 title: 'Lượt xem',
-                                value: series.reduce((total, s) => total + (s.viewCount || 0), 0),
+                                value: Array.isArray(series) ? series.reduce((total, s) => total + (s.viewCount || 0), 0) : 0,
                                 icon: '👀',
                                 color: 'purple',
                                 description: 'Tổng lượt xem các khóa học',
                                 gradient: 'from-purple-400 to-indigo-600'
+                            },
+                            {
+                                title: 'Đánh giá',
+                                value: Array.isArray(series) ? series.reduce((total, s) => total + (s.ratingCount || 0), 0) : 0,
+                                icon: '⭐',
+                                color: 'yellow',
+                                description: 'Tổng số đánh giá nhận được',
+                                gradient: 'from-yellow-400 to-orange-500'
                             }
                         ].map((stat, index) => (
                             <div key={index} className="group bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/40 hover:shadow-3xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
@@ -272,7 +411,7 @@ const InstructorProfile = () => {
                                 </div>
                             </div>
 
-                            {series.length === 0 ? (
+                            {Array.isArray(series) && series.length === 0 ? (
                                 <div className="text-center py-16">
                                     <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                                         <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +423,7 @@ const InstructorProfile = () => {
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {series.map((course) => (
+                                    {Array.isArray(series) && series.map((course) => (
                                         <div key={course._id} className="group bg-white/70 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/90 transition-all duration-500 hover:shadow-2xl border border-white/50 hover:border-blue-200/50 hover:-translate-y-2 relative overflow-hidden">
                                             {/* Course Background Animation */}
                                             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

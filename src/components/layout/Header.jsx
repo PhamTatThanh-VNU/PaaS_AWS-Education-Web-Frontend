@@ -109,6 +109,7 @@ const Header = () => {
 
                         {isAuthenticated ? (
                             <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200">
+                                <Link to="/subscribe" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">Followed</Link>
                                 <Link to="/profile" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">Profile</Link>
                                 <Link to="/change-password" className="text-gray-600 hover:text-indigo-600 transition-colors font-medium">Change Password</Link>
                                 <button onClick={handleSignOut} className="text-left text-gray-600 hover:text-indigo-600 transition-colors font-medium">
