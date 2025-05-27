@@ -37,15 +37,7 @@ VITE_AWS_REGION=ap-southeast-1
 VITE_AWS_USER_POOL_ID=your-user-pool-id
 VITE_AWS_USER_POOL_CLIENT_ID=your-user-pool-client-id
 VITE_BACKEND_URL=http://localhost:3000
-VITE_GOOGLE_GEMINI_API_KEY=your-google-gemini-api-key
 ```
-
-To get a Google Gemini API key:
-1. Visit the [Google AI Studio](https://aistudio.google.com/)
-2. Create an account if you don't have one
-3. Navigate to the API keys section
-4. Create a new API key
-5. Copy the key to your `.env` file
 
 #### Running the Application Locally
 
